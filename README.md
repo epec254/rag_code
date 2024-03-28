@@ -40,7 +40,7 @@ RAG Studio supports parameterizing your chains - this allows you to quickly iter
 
 Parameterization is based on a YAML file.  Open [`2_hello_world_config.yaml`](M1_Sample_Code/2_hello_world_config.yaml) for an example of the configuration file - the structure of the YAML is up to you, although in the next tutorial, you will see our suggested structure.
 
-Open [`2_hello_world_parameterized_chain`](M1_Sample_Code/2_hello_world_parameterized_chain.py) and [`2_hello_world_parameterized_chain_driver_notebook`](M1_Sample_Code/2_hello_world_parameterized_chain_driver_notebook.py) to see how this works in practice.
+Open [`2_hello_world_parameterized_chain`](M1_Sample_Code/2_hello_world_parameterized_chain.py) and [`2_hello_world_parameterized_driver_notebook`](M1_Sample_Code/2_hello_world_parameterized_driver_notebook.py) to see how this works in practice.
 
 
 How to access configuration settings:
