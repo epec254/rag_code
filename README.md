@@ -17,6 +17,8 @@ We suggest following the below tutorials to get started, but you can also refer 
 %pip install --quiet "PUT_RAG_STUDIO_WHEEL_HERE"
 ```
 
+*Note: While stored in the Git repo as `.py` files, these `.py` files are actually Databricks Notebooks - if you import the file using Databricks, it will render as a Notebook in the Notebook editor.*
+
 ## Tutorial 1: Hello world
 
 ### Creating a chain
