@@ -5,8 +5,8 @@ Note: This feature is in [Private Preview](https://docs.databricks.com/en/releas
 # Documentation
 
 We suggest following the below tutorials to get started, but you can also refer to our documentation:
-- [RAG Studio Overview Docs.pdf](RAG Studio Overview Docs.pdf)
-- [Evaluation Suite Doc.pdf](Evaluation Suite Doc.pdf)
+- [RAG Studio Overview Docs.pdf](<RAG Studio Overview Docs.pdf>)
+- [Evaluation Suite Doc.pdf](<Evaluation Suite Doc.pdf>)
 
 # Tutorials
 
@@ -28,7 +28,7 @@ Note: If you need support for Python based chains, please reach out to our team.
 
 Now, let's log this chain to MLflow and deploy it to the Review App.
 
-When using RAG Studio, you create, evaluate, and deploy new versions of your chain using a "Driver" notebook.  For now, let's just log and deploy the chain.  Open the `1_hello_world_driver_notebook` Notebook, review the code, and try running it.
+When using RAG Studio, you create, evaluate, and deploy new versions of your chain using a "Driver" notebook.  For now, let's just log and deploy the chain.  Open the [`1_hello_world_driver_notebook`](M1_Sample_Code/1_hello_world_driver_notebook.py) Notebook, review the code, and try running it.
 
 If successful, you will be able to chat with your hello world chain in the Review App.
 
