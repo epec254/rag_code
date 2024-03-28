@@ -5,8 +5,8 @@ Note: This feature is in [Private Preview](https://docs.databricks.com/en/releas
 # Documentation
 
 We suggest following the below tutorials to get started, but you can also refer to our documentation:
-- [RAG Studio Overview Docs.pdf](./RAG Studio Overview Docs.pdf)
-- [Evaluation Suite Doc.pdf](./Evaluation Suite Doc.pdf)
+- [RAG Studio Overview Docs.pdf](RAG Studio Overview Docs.pdf)
+- [Evaluation Suite Doc.pdf](Evaluation Suite Doc.pdf)
 
 # Tutorials
 
