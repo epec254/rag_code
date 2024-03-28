@@ -1,0 +1,42 @@
+Copyright (2023) Databricks, Inc.
+
+This Software includes software developed at Databricks (https://www.databricks.com/). 
+
+—----------
+This Software contains code from the following open source projects, licensed under the MIT license:
+
+langchain-ai/langchain - https://github.com/langchain-ai/langchain
+Copyright (c) LangChain, Inc.
+License - https://github.com/langchain-ai/langchain/blob/master/LICENSE
+
+—----------
+This Software contains code from the following open source projects, licensed under the BSD-3 Clause license:
+
+py-pdf/pypdf - https://github.com/langchain-ai/langchain
+Copyright (c) 2006-2008, Mathieu Fenniak
+Some contributions copyright (c) 2007, Ashish Kulkarni <kulkarni.ashish@gmail.com>
+Some contributions copyright (c) 2014, Steve Witham <switham_github@mac-guyver.com>
+License - https://github.com/py-pdf/pypdf/blob/main/LICENSE
+
+pytorch/pytorch - https://github.com/pytorch/pytorch/tree/main?tab=License-1-ov-file#readme
+Copyright (c) 2016-     Facebook, Inc            (Adam Paszke)
+Copyright (c) 2014-     Facebook, Inc            (Soumith Chintala)
+Copyright (c) 2011-2014 Idiap Research Institute (Ronan Collobert)
+Copyright (c) 2012-2014 Deepmind Technologies    (Koray Kavukcuoglu)
+Copyright (c) 2011-2012 NEC Laboratories America (Koray Kavukcuoglu)
+Copyright (c) 2011-2013 NYU                      (Clement Farabet)
+Copyright (c) 2006-2010 NEC Laboratories America (Ronan Collobert, Leon Bottou, Iain Melvin, Jason Weston)
+Copyright (c) 2006      Idiap Research Institute (Samy Bengio)
+Copyright (c) 2001-2004 Idiap Research Institute (Ronan Collobert, Samy Bengio, Johnny Mariethoz)
+License - https://github.com/pytorch/pytorch/tree/main?tab=License-1-ov-file#readme
+
+—----------
+This Software contains code from the following open source projects, licensed under the Apache 2.0 license:
+
+hugging face/transformers - https://github.com/huggingface/transformers/tree/main
+Copyright 2018- The Hugging Face team. All rights reserved.
+License - https://github.com/huggingface/transformers/blob/main/LICENSE
+
+huggingface/tokenizers - https://github.com/huggingface/tokenizers/tree/main
+Copyright Hugging Face Authors
+License - https://github.com/huggingface/tokenizers/blob/main/LICENSE
