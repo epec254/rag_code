@@ -38,9 +38,10 @@ If successful, you will be able to chat with your hello world chain in the Revie
 
 RAG Studio supports parameterizing your chains - this allows you to quickly iterate on quality related parameters (such as the prompt or retriever configuruation) while holding the chain's code constant.
 
-Parameterization is based on a YAML file.  Open `2_hello_world_config.yaml` for an example of the configuration file - the structure of the YAML is up to you, although in the next tutorial, you will see our suggested structure.
+Parameterization is based on a YAML file.  Open [`2_hello_world_config.yaml`](M1_Sample_Code/2_hello_world_config.yaml) for an example of the configuration file - the structure of the YAML is up to you, although in the next tutorial, you will see our suggested structure.
 
-Open `2_hello_world_parameterized_chain` and `2_hello_world_parameterized_chain_driver_notebook` to see how this works in practice.
+Open [`2_hello_world_parameterized_chain`](M1_Sample_Code/2_hello_world_parameterized_chain.py) and [`2_hello_world_parameterized_chain_driver_notebook`](M1_Sample_Code/2_hello_world_parameterized_chain_driver_notebook.py) to see how this works in practice.
+
 
 How to access configuration settings:
 ```
@@ -57,34 +58,34 @@ NOw, we will create a simple RAG chain with PDF files from a UC Volume.
 
 ### Create a UC Volume with PDF files
 
-Create a UC Volume and load PDF files.  You can use the PDFs from the directory `sample_pdfs` to get started quickly - these PDFs are a few recent research papers from Matei's lab.
+Create a UC Volume and load PDF files.  You can use the PDFs from the directory `sample_pdfs`(M1_Sample_Code/) to get started quickly - these PDFs are a few recent research papers from Matei's lab.
 
 ### Create a Vector Index
 
-Open and follow the steps in the notebook `3_load_pdf_to_vector_index` to load PDF files from the UC Volume to a Vector Index.  The sample notebook uses the BGE embedding model hosted on FMAPI, but later tutorials show you how to use OpenAI's embedding models.
+Open and follow the steps in the notebook [`3_load_pdf_to_vector_index`](M1_Sample_Code/3_load_pdf_to_vector_index.py) to load PDF files from the UC Volume to a Vector Index.  The sample notebook uses the BGE embedding model hosted on FMAPI, but later tutorials show you how to use OpenAI's embedding models.
 
 ### Prototype a RAG Chain
 
-1. Take the output from the last cell in the `3_load_pdf_to_vector_index` notebook and overwrite the first few lines of the `3_rag_chain_config.yaml` configuration so your chain can use the vector index you just created.
+1. Take the output from the last cell in the [`3_load_pdf_to_vector_index`](M1_Sample_Code/3_load_pdf_to_vector_index.py) notebook and overwrite the first few lines of the [`3_rag_chain_config.yaml`](M1_Sample_Code/3_rag_chain_config.yaml) configuration so your chain can use the vector index you just created.
 
-2. Open the notebook `3_rag_chain` and run the code locally to test the chain.  This chain uses the `Databricks-DBRX-Instruct` model hosted on FMAPI.
+2. Open the notebook [`3_rag_chain`](M1_Sample_Code/3_rag_chain.py) and run the code locally to test the chain.  This chain uses the `Databricks-DBRX-Instruct` model hosted on FMAPI.
 
-3. Open the notebook `3_rag_chain_driver_notebook` to log, evaluate, and deploy the chain.
+3. Open the notebook [`3_rag_chain_driver_notebook`](M1_Sample_Code/3_rag_chain_driver_notebook.py) to log, evaluate, and deploy the chain.
 
 # Advanced examples & tutorials
 
 ## 4. Multi-turn converastion
 
-The chain `4_rag_chain_w_conversation_history` and `4_rag_chain_w_conversation_history_config.yaml` is an example showing you how to enable multi-turn conversation with a query re-writer prompt.  You can use this example with the driver notebook from Tutorial #3.
+The chain [`4_rag_chain_w_conversation_history`](M1_Sample_Code/4_rag_chain_w_conversation_history.py) and [`4_rag_chain_w_conversation_history_config.yaml`](M1_Sample_Code/4_rag_chain_w_conversation_history_config.yaml) is an example showing you how to enable multi-turn conversation with a query re-writer prompt.  You can use this example with the driver notebook from Tutorial #3.
 
 ## 5. Advanced Evaluation
 ### 5a. Using RAG Evaluation Suite without RAG Studio
 
-If you have a RAG chain that was deployed outside of RAG Studio, you can still use the Evaluation Suite to assess the chain's quality.  See `5_evaluation_without_rag_studio` to see how to do this.
+If you have a RAG chain that was deployed outside of RAG Studio, you can still use the Evaluation Suite to assess the chain's quality.  See [`5_evaluation_without_rag_studio`](M1_Sample_Code/5_evaluation_without_rag_studio.py) to see how to do this.
 
 ### 5b. Improving LLM judge accuracy with few-shot examples
 
-To improve the accuracy of the Databricks judges, you can provide few-shot examples of "good" and "bad" answers for each LLM judge.  Databricks strongly reccomends providing at least 2 postive and 2 negative examples per judge to improve the accuracy.  See the bottom of the notebook `5_evaluation_without_rag_studio` for how to do this.  Note: Even though this example configuration is included in the non-RAG Studio evaluation example, you can use the example configuration with the RAG Studio evaluation tutorials above.
+To improve the accuracy of the Databricks judges, you can provide few-shot examples of "good" and "bad" answers for each LLM judge.  Databricks strongly reccomends providing at least 2 postive and 2 negative examples per judge to improve the accuracy.  See the bottom of the notebook [`5_evaluation_without_rag_studio`](M1_Sample_Code/5_evaluation_without_rag_studio.py) for how to do this.  Note: Even though this example configuration is included in the non-RAG Studio evaluation example, you can use the example configuration with the RAG Studio evaluation tutorials above.
 
 ## 6. Review user feedback from the Review App
 
@@ -93,4 +94,4 @@ You can use the human feedback collected using the Review App to:
 - Curate an evaluation set for offline evaluation
 - Fine tune a generation or embedding model to improve quality
 
-All deployed models from RAG Studio automatically collect trace logs and human feedback to an Inference Table.  Use the notebook `6_export_inference_table_to_logs` to turn this Inference Table into a well-schemed `request_log` (with traces) and `assessment_log` with human feedback.
+All deployed models from RAG Studio automatically collect trace logs and human feedback to an Inference Table.  Use the notebook [`6_export_inference_table_to_logs`](M1_Sample_Code/6_export_inference_table_to_logs.py) to turn this Inference Table into a well-schemed `request_log` (with traces) and `assessment_log` with human feedback.
