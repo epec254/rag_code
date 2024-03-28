@@ -1,0 +1,18 @@
+vector_search_endpoint_name: "vs_endpoint_name"
+vector_search_index: "catalog.schema.index_name"
+# These must be set to use the Review App
+vector_search_schema:
+  primary_key: chunk_id
+  chunk_text: chunked_text
+  document_source: doc_uri
+vector_search_parameters:
+  k: 3
+chunk_template: "`{chunk_text}`\n"
+chat_endpoint: "databricks-dbrx-instruct"
+chat_prompt_template: "You are a trusted assistant that helps answer questions about academic research based only on the provided information. If you do not know the answer to a question, you truthfully say you do not know.  Here is some context which might or might not help you answer: {context}.  Answer directly, do not repeat the question, do not start with something like: the answer to the question, do not add AI in front of your answer, do not say: here is the answer, do not mention the context or the question. Based on this history and context, answer this question: {question}."
+chat_prompt_template_variables:
+  - "context"
+  - "question"
+chat_endpoint_parameters:
+  temperature: 0.01
+  max_tokens: 500
