@@ -155,7 +155,7 @@ rag.set_chain(chain)
 # COMMAND ----------
 
 # DBTITLE 1,RAG Experimental Execution Command
-# %run ./RAG_Experimental
+# %run ./RAG_Experimental_Code
 
 # COMMAND ----------
 

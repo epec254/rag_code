@@ -31,7 +31,7 @@ def parse_deployment_info(deployment_info):
 
 # COMMAND ----------
 
-# MAGIC %run ./RAG_Experimental
+# MAGIC %run ./RAG_Experimental_Code
 
 # COMMAND ----------
 

@@ -224,50 +224,6 @@ ASSESSMENT_LOG_SCHEMA = T.StructType(
     ]
 )
 
-######################################################################
-# Eval dataset schema definitions
-######################################################################
-
-RETRIEVAL_OUTPUT_SCHEMA = T.StructType(
-    [
-        T.StructField("name", T.StringType()),
-        T.StructField("chunks", T.ArrayType(CHUNK_SCHEMA)),
-    ]
-)
-
-GROUND_TRUTH_OUTPUT_SCHEMA = T.StructType(
-    [
-        T.StructField("content", T.StringType()),
-    ]
-)
-
-GROUND_TRUTH_SCHEMA = T.StructType(
-    [
-        T.StructField("text_output", GROUND_TRUTH_OUTPUT_SCHEMA),
-        T.StructField("retrieval_output", RETRIEVAL_OUTPUT_SCHEMA),
-    ]
-)
-
-EVAL_DATASET_INPUT_SCHEMA = T.StructType(
-    [
-        T.StructField("request", REQUEST_SCHEMA),
-        T.StructField("ground_truth", GROUND_TRUTH_SCHEMA),
-    ]
-)
-
-EVAL_DATASET_OUTPUT_SCHEMA = T.StructType(
-    [
-        T.StructField("request", REQUEST_SCHEMA),
-        T.StructField("trace", TRACE_SCHEMA),
-        T.StructField(
-            "output",
-            T.StructType([T.StructField("choices", CHOICES_SCHEMA, False)]),
-            False,
-        ),
-        T.StructField("ground_truth", GROUND_TRUTH_SCHEMA),
-    ]
-)
-
 # COMMAND ----------
 
 def unpack_and_split_payloads(payload_df: DataFrame) -> Tuple[DataFrame, DataFrame]:
