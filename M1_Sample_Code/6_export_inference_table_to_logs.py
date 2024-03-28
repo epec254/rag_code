@@ -12,8 +12,43 @@
 
 # COMMAND ----------
 
+# DBTITLE 1,PySpark DataFrame Utilities
 from pyspark.sql import DataFrame, SparkSession, window, functions as F, types as T
 from typing import Optional, Tuple
+
+# COMMAND ----------
+
+# DBTITLE 1,Configure table names
+############
+# UC FQN to the Inference Table
+# You can find this from the chain's Model Serving Endpoint
+############
+dbutils.widgets.text(
+    "inference_table_uc_fqn",
+    label="1. Inference Table UC table",
+    defaultValue="catalog.schema.inference_table",
+)
+inference_table_uc_fqn = dbutils.widgets.get("inference_table_uc_fqn")
+
+############
+# Specify UC FQN to output the `request_log` table to
+############
+dbutils.widgets.text(
+    "request_log_output_uc_fqn",
+    label="2a. Request Log output UC table",
+    defaultValue="catalog.schema.request_log",
+)
+request_log_output_uc_fqn = dbutils.widgets.get("request_log_output_uc_fqn")
+
+############
+# Specify UC FQN to output the `assessment_log` table to
+############
+dbutils.widgets.text(
+    "assessment_log_output_uc_fqn",
+    label="2b. Assessment Log output UC table",
+    defaultValue="catalog.schema.assessment_log",
+)
+assessment_log_output_uc_fqn = dbutils.widgets.get("assessment_log_output_uc_fqn")
 
 # COMMAND ----------
 
@@ -374,32 +409,9 @@ def unpack_and_split_payloads(payload_df: DataFrame) -> Tuple[DataFrame, DataFra
 
 # COMMAND ----------
 
-dbutils.widgets.text(
-    "inference_table_uc_fqdn",
-    label="1. Inference Table UC table",
-    defaultValue="catalog.schema.inference_table",
-)
-inference_table_uc_fqdn = dbutils.widgets.get("inference_table_uc_fqdn")
-
-dbutils.widgets.text(
-    "request_log_output_uc_fqdn",
-    label="2a. Request Log output UC table",
-    defaultValue="catalog.schema.request_log",
-)
-request_log_output_uc_fqdn = dbutils.widgets.get("request_log_output_uc_fqdn")
-
-dbutils.widgets.text(
-    "assessment_log_output_uc_fqdn",
-    label="2b. Assessment Log output UC table",
-    defaultValue="catalog.schema.assessment_log",
-)
-assessment_log_output_uc_fqdn = dbutils.widgets.get("assessment_log_output_uc_fqdn")
-
-# COMMAND ----------
-
 # DBTITLE 1,Unpack the payloads
 
-payload_df = spark.table(inference_table_uc_fqdn)
+payload_df = spark.table(inference_table_uc_fqn)
 request_logs, assessment_logs = unpack_and_split_payloads(payload_df)
 
 # COMMAND ----------
@@ -414,10 +426,10 @@ display(assessment_logs)
 
 request_logs.write.format("delta").option("mergeSchema", "true").mode(
     "overwrite"
-).saveAsTable(request_log_output_uc_fqdn)
+).saveAsTable(request_log_output_uc_fqn)
 assessment_logs.write.format("delta").option("mergeSchema", "true").mode(
     "overwrite"
-).saveAsTable(assessment_log_output_uc_fqdn)
+).saveAsTable(assessment_log_output_uc_fqn)
 
 # COMMAND ----------
 
