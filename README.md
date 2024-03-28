@@ -64,7 +64,7 @@ NOw, we will create a simple RAG chain with PDF files from a UC Volume.
 
 ### Create a UC Volume with PDF files
 
-Create a UC Volume and load PDF files.  You can use the PDFs from the directory `sample_pdfs`(M1_Sample_Code/) to get started quickly - these PDFs are a few recent research papers from Matei's lab.
+Create a UC Volume and load PDF files.  You can use the PDFs from the directory [`sample_pdfs`](sample_pdfs/) to get started quickly - these PDFs are a few recent research papers from Matei's lab.
 
 ### Create a Vector Index
 
