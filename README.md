@@ -10,7 +10,7 @@ We suggest following the below tutorials to get started, but you can also refer 
 
 # Tutorials
 
-Important: Throughout the tutorial notebooks you will need to replace the `PUT_*` placeholders with the URLs you recieved from your Databricks representative.
+**Important: Before you start, open the [`wheel_installer` notebook](M1_Sample_Code/wheel_installer.py) and replace the `PUT_*` placeholders with the URLs you recieved from your Databricks representative.**
 
 `%pip install --quiet "PUT_RAG_EVAL_SUITE_WHEEL_HERE"`
 `%pip install --quiet "PUT_RAG_STUDIO_WHEEL_HERE"`
