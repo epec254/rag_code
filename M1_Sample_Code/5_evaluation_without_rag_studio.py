@@ -10,7 +10,7 @@
 # COMMAND ----------
 
 # DBTITLE 1,Install Evaluation Suite
-# MAGIC %pip install --quiet "PUT_RAG_EVAL_SUITE_WHEEL_HERE"
+# MAGIC %run ./wheel_installer
 # MAGIC %pip install --upgrade --quiet mlflow
 # MAGIC dbutils.library.restartPython()
 
