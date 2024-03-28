@@ -22,7 +22,7 @@ We suggest following the below tutorials to get started, but you can also refer 
 ### Creating a chain
 First, let's create the most minimal chain in RAG Studio.  This tutorial will familarize you with the basics of the development workflow and the chain input/output schema.
 
-When using RAG Studio, you create your chain code using LangChain inside a Notebook.  Open the `hello_world_chain` Notebook, review the commented code, and try running it.
+When using RAG Studio, you create your chain code using LangChain inside a Notebook.  Open the [`hello_world_chain`](M1_Sample_Code/1_hello_world_chain.py) Notebook, review the commented code, and try running it.
 
 Note: If you need support for Python based chains, please reach out to our team.
 
