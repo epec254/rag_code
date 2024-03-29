@@ -1,7 +1,10 @@
 # Databricks notebook source
 # DBTITLE 1,Databricks RAG Studio Installer
 # MAGIC %run ./wheel_installer
-# MAGIC dbutils.library.restartPython() 
+
+# COMMAND ----------
+
+dbutils.library.restartPython() 
 
 # COMMAND ----------
 

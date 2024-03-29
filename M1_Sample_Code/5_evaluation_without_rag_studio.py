@@ -58,7 +58,10 @@
 
 # DBTITLE 1,Install Evaluation Suite
 # MAGIC %run ./wheel_installer
-# MAGIC dbutils.library.restartPython()
+
+# COMMAND ----------
+
+dbutils.library.restartPython()
 
 # COMMAND ----------
 
