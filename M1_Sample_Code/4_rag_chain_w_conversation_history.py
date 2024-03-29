@@ -1,6 +1,9 @@
 # Databricks notebook source
 # DBTITLE 1,Databricks Rag Studio Installer
 # MAGIC %run ./wheel_installer
+
+# COMMAND ----------
+
 # MAGIC %pip install --quiet --upgrade databricks-vectorsearch
 
 # COMMAND ----------
