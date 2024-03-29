@@ -259,6 +259,8 @@ ASSESSMENT_LOG_SCHEMA = T.StructType(
     ]
 )
 
+
+
 # COMMAND ----------
 
 def unpack_and_split_payloads(payload_df: DataFrame) -> Tuple[DataFrame, DataFrame]:
@@ -439,5 +441,5 @@ def get_table_url(table_fqdn):
     return url
 
 
-print(f"Wrote `request_log` to: {get_table_url(request_log_output_uc_fqdn)}")
-print(f"Wrote `assessment_log` to: {get_table_url(assessment_log_output_uc_fqdn)}")
+print(f"Wrote `request_log` to: {get_table_url(request_log_output_uc_fqn)}")
+print(f"Wrote `assessment_log` to: {get_table_url(assessment_log_output_uc_fqn)}")
