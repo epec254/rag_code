@@ -1,8 +1,6 @@
 # Databricks notebook source
 # DBTITLE 1,Databricks RAG Evaluation Installer
-# MAGIC %pip install --quiet "PUT_RAG_EVAL_SUITE_WHEEL_HERE"
-# MAGIC %pip install --quiet "PUT_RAG_STUDIO_WHEEL_HERE"
-# MAGIC # dbutils.library.restartPython() 
+# MAGIC %run ./wheel_installer
 
 # COMMAND ----------
 
