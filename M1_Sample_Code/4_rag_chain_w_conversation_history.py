@@ -186,25 +186,25 @@ rag.set_chain(chain)
 # COMMAND ----------
 
 # DBTITLE 1,RAG Experimental Execution Command
-# MAGIC %run ./RAG_Experimental
+# %run ./RAG_Experimental_Code
 
 # COMMAND ----------
 
 # DBTITLE 1,Escaped JSON Display Generator
 
-import json
-import html
+# import json
+# import html
 
-json_trace = experimental_get_json_trace(chain, model_input_sample)
+# json_trace = experimental_get_json_trace(chain, model_input_sample)
 
-json_string = json.dumps(json_trace, indent=4)
+# json_string = json.dumps(json_trace, indent=4)
 
-# Escape HTML characters to avoid XSS or rendering issues
-escaped_json_string = html.escape(json_string)
+# # Escape HTML characters to avoid XSS or rendering issues
+# escaped_json_string = html.escape(json_string)
 
-# Generate HTML with the escaped JSON inside <pre> and <code> tags
-pretty_json_html = f"<html><body><pre><code>{escaped_json_string}</code></pre></body></html>"
+# # Generate HTML with the escaped JSON inside <pre> and <code> tags
+# pretty_json_html = f"<html><body><pre><code>{escaped_json_string}</code></pre></body></html>"
 
-# To use the HTML string in a context that renders HTML, 
-# such as a web application or a notebook cell that supports HTML output
-displayHTML(pretty_json_html)
+# # To use the HTML string in a context that renders HTML, 
+# # such as a web application or a notebook cell that supports HTML output
+# displayHTML(pretty_json_html)
