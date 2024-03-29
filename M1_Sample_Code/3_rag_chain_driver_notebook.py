@@ -1,7 +1,6 @@
 # Databricks notebook source
 # DBTITLE 1,Databricks RAG Studio Installer
 # MAGIC %run ./wheel_installer
-# MAGIC %pip install --quiet mlflow[databricks] mlflow[skinny]
 
 # COMMAND ----------
 
