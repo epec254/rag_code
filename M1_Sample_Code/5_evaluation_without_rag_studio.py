@@ -1,6 +1,53 @@
 # Databricks notebook source
 # MAGIC %md
-# MAGIC This notebook shows you how to use Databricks' Evaluation Suite *without* RAG studio e.g., for a chain that you have deployed already.
+# MAGIC **This notebook shows you how to use Databricks' Evaluation Suite *without* RAG studio e.g., for a chain that you have deployed already.**
+# MAGIC
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC # Metrics & LLM Judges overview
+# MAGIC Databricks provides a set of metrics that enable you to measure the quality, cost and latency of your RAG app. These metrics are curated by Databricks' Research team as the most relevant (no pun intended) metrics for evaluating RAG applications.
+# MAGIC
+# MAGIC RAG metrics can be computed using either:
+# MAGIC 1. Human-labeled ground truth assessments
+# MAGIC 2. LLM judge-labeled assessments 
+# MAGIC
+# MAGIC A subset of the metrics work only with *either* LLM judge-labeled OR human-labeled ground truth asessments.
+# MAGIC
+# MAGIC ## Unstructured docs retrieval & generation metrics
+# MAGIC
+# MAGIC ### Retriever
+# MAGIC
+# MAGIC RAG Studio supports the following metrics for evaluating the retriever.
+# MAGIC
+# MAGIC | Question to answer                                                                | Metric | Per trace value | Aggregated value | Work with human assessments | LLM judged assessments | 
+# MAGIC |-----------------------------------------------------------------------------------|--------|--------|--------|------|--------|
+# MAGIC | Are the retrieved chunks relevant to the user’s query?                            | Precision of "relevant chunk" @ K | 0 to 100% | 0 to 100% | ✔️ | ✔️ |
+# MAGIC | Are **ALL** chunks that are relevant to the user’s query retrieved?               | Recall of "relevant chunk" @ K | 0 to 100% |0 to 100% | ✔️ |✖️ |
+# MAGIC | Are the retrieved chunks returned in the correct order of most to least relevant? | nDCG of "relevant chunk" @ K | 0 to 1 | 0 to 1 |✔️ | ✖️ |
+# MAGIC
+# MAGIC ### Generation model
+# MAGIC
+# MAGIC These metrics measure the generation model's performance when the prompt is augemented with unstructured docs from a retrieval step.
+# MAGIC
+# MAGIC | Question to answer                                                                | Metric | Per trace value | Aggregated value | Work with human assessments | LLM judged assessments | 
+# MAGIC |-----------------------------------------------------------------------------------|--------|--------|--------|------|--------|
+# MAGIC | Is the LLM not hallucinating & responding based ONLY on the context provided? | Faithfulness (to context) | true/false | 0 to 100% | ✖️ | ✔️ |
+# MAGIC | Is the response on-topic given the query AND retrieved contexts? | Answer relevance (to query given the context) | true/false | 0 to 100% | ✖️ | ✔️ | 
+# MAGIC | Is the response on-topic given the query? | Answer relevance (to query) | true/false | 0 to 100% | ✖️ | ✔️ | 
+# MAGIC | What is the cost of the generation? | Token Count | sum(tokens) | sum(tokens) | n/a |n/a |
+# MAGIC | What is the latency of generation? | Latency | milliseconds | average(milliseconds) | n/a | n/a |
+# MAGIC
+# MAGIC ### RAG chain metrics
+# MAGIC
+# MAGIC These metrics measure the chain's final response back to the user.  
+# MAGIC
+# MAGIC | Question to answer                                                                | Metric | Per trace value | Aggregated value | Work with human assessments | LLM judged assessments | 
+# MAGIC |-----------------------------------------------------------------------------------|--------|--------|--------|------|--------|
+# MAGIC | Is the response accurate (correct)? | Answer correctness (vs. ground truth) | true/false | 0 to 100% |✔️| ✖️ |
+# MAGIC | Does the response violate any of my company policies (racism, toxicity, etc)? | Toxicity | true/false | 0 to 100% | ✖️ | ✔️|
+# MAGIC
 
 # COMMAND ----------
 
@@ -251,9 +298,12 @@ eval_results.dashboard_url
 # MAGIC | Response    | llm_judged_faithful_to_context        | Is the answer faithful to the retrieval context? (Uses LLM-as-a-judge)  |       request                | response, retrieval_context|
 # MAGIC | Response    | llm_judged_relevant_to_question_and_context | Is the answer relevant given the question and the retrieved context? (Uses LLM-as-a-judge) | request | response, retrieval_context |
 # MAGIC | Response    | llm_judged_answer_good                | Is the answer good given the question and the ground-truth answer? (Uses LLM-as-a-judge) | request, expected_response |response |
-# MAGIC | Retrieval   | ground_truth_retrieval_precision_at_k | Precision@k (k=1,3,5, 10) for the retrieved context                     | expected_retrieval_context | retrieval_context|
-# MAGIC | Retrieval   | ground_truth_retrieval_recall_at_k    | Recall@k (k=1,3,5, 10) for the retrieved context                        | expected_retrieval_context | retrieval_context|
-# MAGIC | Retrieval   | ground_truth_retrieval_ndcg_at_k      | NDCG@k (k=1,3,5, 10) for the retrieved context                          | expected_retrieval_context | retrieval_context|
+# MAGIC | Retrieval   | ground_truth_precision_at_k | Precision@k (k=1,3,5, 10) for the retrieved context                     | expected_retrieval_context | retrieval_context|
+# MAGIC | Retrieval   | ground_truth_recall_at_k    | Recall@k (k=1,3,5, 10) for the retrieved context                        | expected_retrieval_context | retrieval_context|
+# MAGIC | Retrieval   | ground_truth_ndcg_at_k      | NDCG@k (k=1,3,5, 10) for the retrieved context                          | expected_retrieval_context | retrieval_context|
+# MAGIC | Retrieval   | llm_judged_precision_at_k | Precision@k (k=1,3,5, 10) for the retrieved context                     | n/a | retrieval_context|
+# MAGIC | Retrieval   | llm_judged_recall_at_k    | Recall@k (k=1,3,5, 10) for the retrieved context                        | n/a | retrieval_context|
+# MAGIC | Retrieval   | llm_judged_ndcg_at_k      | NDCG@k (k=1,3,5, 10) for the retrieved context                          | n/a | retrieval_context|
 
 # COMMAND ----------
 

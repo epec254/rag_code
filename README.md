@@ -76,7 +76,12 @@ Open and follow the steps in the notebook [`3_load_pdf_to_vector_index`](M1_Samp
 
 2. Open the notebook [`3_rag_chain`](M1_Sample_Code/3_rag_chain.py) and run the code locally to test the chain.  This chain uses the `Databricks-DBRX-Instruct` model hosted on FMAPI.
 
-3. Open the notebook [`3_rag_chain_driver_notebook`](M1_Sample_Code/3_rag_chain_driver_notebook.py) to log, evaluate, and deploy the chain.
+### Log & evaluate a RAG Chain
+
+To understand the evaluation metrics and LLM judges that are used to evaluate your chain, refer to the [metrics overview](metrics.md).
+
+1. Open the notebook [`3_rag_chain_driver_notebook`](M1_Sample_Code/3_rag_chain_driver_notebook.py) to log, evaluate, and deploy the chain.
+2. Share the deployed Review App with your users to interact with the chain and provide feedback.
 
 # Advanced examples & tutorials
 
@@ -91,7 +96,9 @@ If you have a RAG chain that was deployed outside of RAG Studio, you can still u
 
 ### 5b. Improving LLM judge accuracy with few-shot examples
 
-To improve the accuracy of the Databricks judges, you can provide few-shot examples of "good" and "bad" answers for each LLM judge.  Databricks strongly reccomends providing at least 2 postive and 2 negative examples per judge to improve the accuracy.  See the bottom of the notebook [`5_evaluation_without_rag_studio`](M1_Sample_Code/5_evaluation_without_rag_studio.py) for how to do this.  Note: Even though this example configuration is included in the non-RAG Studio evaluation example, you can use the example configuration with the RAG Studio evaluation tutorials above.
+To improve the accuracy of the Databricks judges, you can provide few-shot examples of "good" and "bad" answers for each LLM judge.  Databricks strongly reccomends providing at least 2 postive and 2 negative examples per judge to improve the accuracy.  See the bottom of the notebook [`5_evaluation_without_rag_studio`](M1_Sample_Code/5_evaluation_without_rag_studio.py) for how to do this.  
+
+*Note: Even though this example configuration is included in the non-RAG Studio evaluation example, you can use the example configuration with the RAG Studio evaluation tutorials above.*
 
 ## 6. Review user feedback from the Review App
 
@@ -101,3 +108,7 @@ You can use the human feedback collected using the Review App to:
 - Fine tune a generation or embedding model to improve quality
 
 All deployed models from RAG Studio automatically collect trace logs and human feedback to an Inference Table.  Use the notebook [`6_export_inference_table_to_logs`](M1_Sample_Code/6_export_inference_table_to_logs.py) to turn this Inference Table into a well-schemed `request_log` (with traces) and `assessment_log` with human feedback.
+
+## 7. Request expert stakeholder input on logs
+
+If you are unsure if a request/response from your deployed RAG Chain is correct or you got negative feedback on the request/response but are unsure why, you can use the Review App to request human feedback on requests from a deployed RAG chain. 

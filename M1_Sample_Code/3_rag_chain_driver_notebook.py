@@ -240,8 +240,64 @@ print(f"Loaded eval set to: {eval_table_fqdn}")
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ## Configure the evaluation
+# MAGIC
+# MAGIC Databricks provides a set of metrics that enable you to measure the quality, cost and latency of your RAG app. These metrics are curated by Databricks' Research team as the most relevant (no pun intended) metrics for evaluating RAG applications.
+# MAGIC
+# MAGIC RAG metrics can be computed using either:
+# MAGIC 1. Human-labeled ground truth assessments
+# MAGIC 2. LLM judge-labeled assessments 
+# MAGIC
+# MAGIC A subset of the metrics work only with *either* LLM judge-labeled OR human-labeled ground truth asessments.
+# MAGIC
+# MAGIC ### Improve judge accuracy
+# MAGIC
+# MAGIC To improve the accuracy of the Databricks judges, you can provide few-shot examples of "good" and "bad" answers for each LLM judge.  Databricks strongly reccomends providing at least 2 postive and 2 negative examples per judge to improve the accuracy.  See the bottom of the notebook [`5_evaluation_without_rag_studio`](M1_Sample_Code/5_evaluation_without_rag_studio.py) for how to do this.  *Note: Even though this example configuration is included in the non-RAG Studio evaluation example, you can use the example configuration with this notebook.*
+# MAGIC
+# MAGIC
+# MAGIC ### Unstructured docs retrieval & generation metrics
+# MAGIC
+# MAGIC #### Retriever
+# MAGIC
+# MAGIC RAG Studio supports the following metrics for evaluating the retriever.
+# MAGIC
+# MAGIC | Question to answer                                                                | Metric | Per trace value | Aggregated value | Work with human assessments | LLM judged assessments | 
+# MAGIC |-----------------------------------------------------------------------------------|--------|--------|--------|------|--------|
+# MAGIC | Are the retrieved chunks relevant to the user’s query?                            | Precision of "relevant chunk" @ K | 0 to 100% | 0 to 100% | ✔️ | ✔️ `context_relevant_to_question` |
+# MAGIC | Are **ALL** chunks that are relevant to the user’s query retrieved?               | Recall of "relevant chunk" @ K | 0 to 100% |0 to 100% | ✔️ |✖️ |
+# MAGIC | Are the retrieved chunks returned in the correct order of most to least relevant? | nDCG of "relevant chunk" @ K | 0 to 1 | 0 to 1 |✔️ | ✖️ |
+# MAGIC
+# MAGIC #### Generation model
+# MAGIC
+# MAGIC These metrics measure the generation model's performance when the prompt is augemented with unstructured docs from a retrieval step.
+# MAGIC
+# MAGIC | Question to answer                                                                | Metric | Per trace value | Aggregated value | Work with human assessments | LLM judged assessments | 
+# MAGIC |-----------------------------------------------------------------------------------|--------|--------|--------|------|--------|
+# MAGIC | Is the LLM not hallucinating & responding based ONLY on the context provided? | Faithfulness (to context) | true/false | 0 to 100% | ✖️ | ✔️ `faithful_to_context` |
+# MAGIC | Is the response on-topic given the query AND retrieved contexts? | Answer relevance (to query given the context) | true/false | 0 to 100% | ✖️ | ✔️ `relevant_to_question_and_context` | 
+# MAGIC | Is the response on-topic given the query? | Answer relevance (to query) | true/false | 0 to 100% | ✖️ | ✔️ `relevant_to_question` | 
+# MAGIC | What is the cost of the generation? | Token Count | sum(tokens) | sum(tokens) | n/a |n/a |
+# MAGIC | What is the latency of generation? | Latency | milliseconds | average(milliseconds) | n/a | n/a |
+# MAGIC
+# MAGIC #### RAG chain metrics
+# MAGIC
+# MAGIC These metrics measure the chain's final response back to the user.  
+# MAGIC
+# MAGIC | Question to answer                                                                | Metric | Per trace value | Aggregated value | Work with human assessments | LLM judged assessments | 
+# MAGIC |-----------------------------------------------------------------------------------|--------|--------|--------|------|--------|
+# MAGIC | Is the response accurate (correct)? | Answer correctness (vs. ground truth) | true/false | 0 to 100% |✔️ `answer_good` | ✖️ |
+# MAGIC | Does the response violate any of my company policies (racism, toxicity, etc)? | Toxicity | true/false | 0 to 100% | ✖️ | ✔️ `harmful` |
+# MAGIC
+# MAGIC
+
+# COMMAND ----------
+
 # DBTITLE 1,YAML Assessment Config Parser
 import yaml
+############
+# Note the judge names are fixed values per the table above.
+############
 
 ############
 # Default evaluation configuration
