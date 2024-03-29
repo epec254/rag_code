@@ -262,7 +262,7 @@ print(f"Loaded eval set to: {eval_table_fqdn}")
 # MAGIC
 # MAGIC RAG Studio supports the following metrics for evaluating the retriever.
 # MAGIC
-# MAGIC | Question to answer                                                                | Metric | Per trace value | Aggregated value | Work with human assessments | LLM judged assessments | 
+# MAGIC | Question to answer                                                                | Metric | Per trace value | Aggregated value | Work with human assessments | LLM judged assessments & judge name | 
 # MAGIC |-----------------------------------------------------------------------------------|--------|--------|--------|------|--------|
 # MAGIC | Are the retrieved chunks relevant to the user’s query?                            | Precision of "relevant chunk" @ K | 0 to 100% | 0 to 100% | ✔️ | ✔️ `context_relevant_to_question` |
 # MAGIC | Are **ALL** chunks that are relevant to the user’s query retrieved?               | Recall of "relevant chunk" @ K | 0 to 100% |0 to 100% | ✔️ |✖️ |
@@ -272,7 +272,7 @@ print(f"Loaded eval set to: {eval_table_fqdn}")
 # MAGIC
 # MAGIC These metrics measure the generation model's performance when the prompt is augemented with unstructured docs from a retrieval step.
 # MAGIC
-# MAGIC | Question to answer                                                                | Metric | Per trace value | Aggregated value | Work with human assessments | LLM judged assessments | 
+# MAGIC | Question to answer                                                                | Metric | Per trace value | Aggregated value | Work with human assessments | LLM judged assessments & judge name | 
 # MAGIC |-----------------------------------------------------------------------------------|--------|--------|--------|------|--------|
 # MAGIC | Is the LLM not hallucinating & responding based ONLY on the context provided? | Faithfulness (to context) | true/false | 0 to 100% | ✖️ | ✔️ `faithful_to_context` |
 # MAGIC | Is the response on-topic given the query AND retrieved contexts? | Answer relevance (to query given the context) | true/false | 0 to 100% | ✖️ | ✔️ `relevant_to_question_and_context` | 
@@ -284,7 +284,7 @@ print(f"Loaded eval set to: {eval_table_fqdn}")
 # MAGIC
 # MAGIC These metrics measure the chain's final response back to the user.  
 # MAGIC
-# MAGIC | Question to answer                                                                | Metric | Per trace value | Aggregated value | Work with human assessments | LLM judged assessments | 
+# MAGIC | Question to answer                                                                | Metric | Per trace value | Aggregated value | Work with human assessments | LLM judged assessments & judge name | 
 # MAGIC |-----------------------------------------------------------------------------------|--------|--------|--------|------|--------|
 # MAGIC | Is the response accurate (correct)? | Answer correctness (vs. ground truth) | true/false | 0 to 100% |✔️ `answer_good` | ✖️ |
 # MAGIC | Does the response violate any of my company policies (racism, toxicity, etc)? | Toxicity | true/false | 0 to 100% | ✖️ | ✔️ `harmful` |
