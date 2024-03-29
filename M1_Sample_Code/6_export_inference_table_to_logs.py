@@ -441,5 +441,5 @@ def get_table_url(table_fqdn):
     return url
 
 
-print(f"Wrote `request_log` to: {get_table_url(request_log_output_uc_fqn)}")
-print(f"Wrote `assessment_log` to: {get_table_url(assessment_log_output_uc_fqn)}")
+print(f"Wrote `request_log` to: {get_table_url(request_log_output_uc_fqn).replace('`', '')}")
+print(f"Wrote `assessment_log` to: {get_table_url(assessment_log_output_uc_fqn).replace('`', '')}")
