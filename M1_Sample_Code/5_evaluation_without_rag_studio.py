@@ -11,7 +11,6 @@
 
 # DBTITLE 1,Install Evaluation Suite
 # MAGIC %run ./wheel_installer
-# MAGIC %pip install --upgrade --quiet mlflow
 # MAGIC dbutils.library.restartPython()
 
 # COMMAND ----------
