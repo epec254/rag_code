@@ -71,7 +71,9 @@ vector_search_as_retriever = DatabricksVectorSearch(
 ).as_retriever(search_kwargs=rag_config.get("vector_search_parameters"))
 
 ############
-# Enable the RAG Studio Review App to properly display retrieved chunks
+# Required to:
+# 1. Enable the RAG Studio Review App to properly display retrieved chunks
+# 2. Enable evaluation suite to measure the retriever
 ############
 rag.set_vector_search_schema(
     primary_key=vector_search_schema.get("primary_key"),
