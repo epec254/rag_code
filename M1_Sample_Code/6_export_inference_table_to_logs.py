@@ -6,9 +6,10 @@
 # MAGIC
 # MAGIC Use this notebook to turn your chain's Inference Table into a well-formed `request_log` and `assessment_log` table.
 # MAGIC
+# MAGIC **Important: Inference Tables can take 15 - 30 minutes to reflect requests made to the REST API / Review App.**
+# MAGIC
 # MAGIC Known issues:
-# MAGIC - Review UI logs feedback on most user actions/clicks.  This unpacker does not merge multiple assessments that orginate from this behavior.
-# MAGIC - Every run of this notebook overwrites the existing table.
+# MAGIC - Every run of this notebook overwrites the previous tables.
 
 # COMMAND ----------
 
@@ -19,36 +20,26 @@ from typing import Optional, Tuple
 # COMMAND ----------
 
 # DBTITLE 1,Configure table names
+uc_catalog = 'catalog'
+uc_schema = 'schema'
+model_name = 'pdf_bot'
+
 ############
 # UC FQN to the Inference Table
-# You can find this from the chain's Model Serving Endpoint
+# You can find this from the chain's Model Serving Endpoint, but by default it is set to `rag_studio-{model_name}_payload`
 ############
-dbutils.widgets.text(
-    "inference_table_uc_fqn",
-    label="1. Inference Table UC table",
-    defaultValue="catalog.schema.inference_table",
-)
-inference_table_uc_fqn = dbutils.widgets.get("inference_table_uc_fqn")
+inference_table_uc_fqn = f"{uc_catalog}.{uc_schema}.`rag_studio-{model_name}_payload`"
 
 ############
 # Specify UC FQN to output the `request_log` table to
 ############
-dbutils.widgets.text(
-    "request_log_output_uc_fqn",
-    label="2a. Request Log output UC table",
-    defaultValue="catalog.schema.request_log",
-)
-request_log_output_uc_fqn = dbutils.widgets.get("request_log_output_uc_fqn")
+request_log_output_uc_fqn = f"{uc_catalog}.{uc_schema}.`rag_studio-{model_name}_request_log`"
+
 
 ############
 # Specify UC FQN to output the `assessment_log` table to
 ############
-dbutils.widgets.text(
-    "assessment_log_output_uc_fqn",
-    label="2b. Assessment Log output UC table",
-    defaultValue="catalog.schema.assessment_log",
-)
-assessment_log_output_uc_fqn = dbutils.widgets.get("assessment_log_output_uc_fqn")
+assessment_log_output_uc_fqn = f"{uc_catalog}.{uc_schema}.`rag_studio-{model_name}_assessment_log`"
 
 # COMMAND ----------
 
@@ -407,14 +398,62 @@ def unpack_and_split_payloads(payload_df: DataFrame) -> Tuple[DataFrame, DataFra
     )
     return request_logs, assessment_logs
 
+def dedup_assessment_logs(
+    assessment_logs: DataFrame, granularity: Optional[str] = None
+) -> DataFrame:
+    """
+    Deduplicates the given assessment logs DataFrame by only keeping the latest entry matching
+    a given request_id and step_id.
 
+    :param assessment_logs: Assessment logs to deduplicate
+    :param granularity: Time granularity of the deduplication (e.g., remove all duplicates per "hour").
+                        String value here should conform to a format string of pyspark.sql.functions.date_trunc
+                        (https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.sql.functions.date_trunc.html).
+                        Currently, only "hour" is supported.
+                        If None, deduplication is done across the entire dataset.
+    :return: Filtered DataFrame of assessment logs
+    """
+    _ROW_NUM_COL = "row_num"
+    _TRUNCATED_TIME_COL = "truncated_time"
+    _ASSESSMENT_LOG_PRIMARY_KEYS = [
+        F.col("request_id"),
+        F.col("step_id"),
+        F.col("source.id"),
+        # Retrieval assessments are additionally identified by their chunk position.
+        F.coalesce(F.col("retrieval_assessment.position"), F.lit(None)),
+    ]
+    _SUPPORTED_GRANULARITIES = ["hour"]
+
+    if granularity is not None and granularity not in _SUPPORTED_GRANULARITIES:
+        raise ValueError(
+            f"granularity must be one of {_SUPPORTED_GRANULARITIES} or None, but got {granularity}"
+        )
+
+    partition_cols = _ASSESSMENT_LOG_PRIMARY_KEYS + (
+        [F.date_trunc(granularity, "timestamp")] if granularity is not None else []
+    )
+    window_spec = window.Window.partitionBy(partition_cols).orderBy(F.desc("timestamp"))
+
+    # Use row_number() to assign a rank to each row within the window
+    assessments_ranked = assessment_logs.withColumn(
+        _ROW_NUM_COL, F.row_number().over(window_spec)
+    )
+
+    # Filter the rows where row_num is 1 to keep only the latest timestamp
+    return assessments_ranked.filter(F.col(_ROW_NUM_COL) == 1).drop(
+        _ROW_NUM_COL, _TRUNCATED_TIME_COL
+    )
 
 # COMMAND ----------
 
 # DBTITLE 1,Unpack the payloads
-
+# Unpack the payloads
 payload_df = spark.table(inference_table_uc_fqn)
-request_logs, assessment_logs = unpack_and_split_payloads(payload_df)
+request_logs, raw_assessment_logs = unpack_and_split_payloads(payload_df)
+
+# The Review App logs every user interaction with the feedback widgets to the inference table - this code de-duplicates them
+deduped_assessments_df = dedup_assessment_logs(raw_assessment_logs, granularity="hour")
+deduped_assessments_df.write.format("delta").mode("overwrite").saveAsTable(assessment_log_output_uc_fqn)
 
 # COMMAND ----------
 
@@ -422,14 +461,15 @@ display(request_logs)
 
 # COMMAND ----------
 
-display(assessment_logs)
+display(deduped_assessments_df)
 
 # COMMAND ----------
 
+# DBTITLE 1,Write raw logs
 request_logs.write.format("delta").option("mergeSchema", "true").mode(
     "overwrite"
 ).saveAsTable(request_log_output_uc_fqn)
-assessment_logs.write.format("delta").option("mergeSchema", "true").mode(
+deduped_assessments_df.write.format("delta").option("mergeSchema", "true").mode(
     "overwrite"
 ).saveAsTable(assessment_log_output_uc_fqn)
 
