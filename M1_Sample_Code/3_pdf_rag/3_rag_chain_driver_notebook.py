@@ -42,6 +42,8 @@ from databricks import rag, rag_eval, rag_studio
 
 import html
 
+mlflow.set_registry_uri('databricks-uc')
+
 ### START: Ignore this code, temporary workarounds given the Private Preview state of the product
 from mlflow.utils import databricks_utils as du
 os.environ['MLFLOW_ENABLE_ARTIFACTS_PROGRESS_BAR'] = "false"
@@ -180,7 +182,7 @@ displayHTML(pretty_json_html)
 # COMMAND ----------
 
 ############
-# Expiermental: you can query the model to iteratively build your evaluation set
+# Experimental: you can query the model to iteratively build your evaluation set
 # ⚠️⚠️ 🐛🐛 Experimental features likely have bugs! 🐛🐛 ⚠️⚠️
 ############
 
@@ -399,7 +401,6 @@ uc_schema = "schema"
 model_name = "pdf_bot"
 uc_model_fqdn = f"{uc_catalog}.{uc_schema}.{model_name}" 
 
-mlflow.set_registry_uri('databricks-uc')
 uc_registered_chain_info = mlflow.register_model(logged_chain_info.model_uri, uc_model_fqdn)
 
 # COMMAND ----------

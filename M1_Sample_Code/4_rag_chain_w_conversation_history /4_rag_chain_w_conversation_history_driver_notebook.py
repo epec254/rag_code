@@ -1,16 +1,16 @@
 # Databricks notebook source
 # MAGIC %md
-# MAGIC 
+# MAGIC
 # MAGIC # 4. RAG Chain with Conversation History Driver Notebook
-# MAGIC 
+# MAGIC
 # MAGIC This notebook demonstrates how to use Databricks RAG Studio to log and evaluate a RAG chain with conversation history. It assumes that you have already set up the necessary vector search endpoint and index. Please make sure to update the catalog and schema names in the notebook.
-# MAGIC 
+# MAGIC
 # MAGIC This notebook covers the following steps:
-# MAGIC 
+# MAGIC
 # MAGIC 1. Install required libraries and import required modules
 # MAGIC 2. Define paths for the chain notebook and config YAML
 # MAGIC 3. Log the chain to MLflow and test it locally, viewing the trace
-# MAGIC 4. Evaluate the chain using an eval dataset
+# MAGIC 4. TODO: Evaluate the chain using an eval dataset
 # MAGIC 5. Deploy the chain
 
 # COMMAND ----------
@@ -41,6 +41,8 @@ import mlflow
 from databricks import rag, rag_eval, rag_studio
 
 import html
+
+mlflow.set_registry_uri('databricks-uc')
 
 ### START: Ignore this code, temporary workarounds given the Private Preview state of the product
 from mlflow.utils import databricks_utils as du
@@ -80,7 +82,7 @@ print(f"Chain config path: {chain_config_path}")
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC 
+# MAGIC
 # MAGIC # Log the chain
 # MAGIC Log the chain to the Notebook's MLflow Experiment inside a Run. The model is logged to the Notebook's MLflow Experiment as a run.
 
@@ -162,3 +164,46 @@ pretty_json_html = f"<html><body><pre><code>{escaped_json_string}</code></pre></
 # To use the HTML string in a context that renders HTML, 
 # such as a web application or a notebook cell that supports HTML output
 displayHTML(pretty_json_html)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC # Evaluate the chain
+
+# COMMAND ----------
+
+# TODO - See Example 3 for an example approach to evaluation
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC # Deploy the model to the Review App
+# MAGIC
+# MAGIC To deploy the model, first register the chain from the MLflow Run as a Unity Catalog model.
+
+# COMMAND ----------
+
+# TODO: Change these values to your catalog and schema
+uc_catalog = "catalog"
+uc_schema = "schema"
+model_name = "pdf_bot_conversation_history"
+uc_model_fqdn = f"{uc_catalog}.{uc_schema}.{model_name}" 
+
+uc_registered_chain_info = mlflow.register_model(logged_chain_info.model_uri, uc_model_fqdn)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC Deploy the chain to:
+# MAGIC 1. Review App so you & your stakeholders can chat with the chain & given feedback via a web UI.
+# MAGIC 2. Chain REST API endpoint to call the chain from your front end.
+# MAGIC 3. Feedback REST API endpoint to pass feedback back from your front end.
+# MAGIC
+# MAGIC **Note:** It can take up to 15 minutes to deploy - we are working to reduce this time to seconds.
+
+# COMMAND ----------
+
+deployment_info = rag_studio.deploy_model(uc_model_fqdn, uc_registered_chain_info.version)
+print(parse_deployment_info(deployment_info))
+
+# Note: It can take up to 15 minutes to deploy - we are working to reduce this time to seconds.
