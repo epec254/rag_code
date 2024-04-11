@@ -138,8 +138,8 @@ model.invoke(example_input)
 # COMMAND ----------
 
 # TODO: Change these values to your catalog and schema
-uc_catalog = "niall_dev"
-uc_schema = "rag"
+uc_catalog = "catalog"
+uc_schema = "schema"
 model_name = "hello_world"
 uc_model_fqdn = f"{uc_catalog}.{uc_schema}.{model_name}" 
 

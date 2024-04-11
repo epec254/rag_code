@@ -250,8 +250,8 @@ eval_dataset = [
 # Turn the eval dataset into a Delta Table
 ############
 # TODO: Change these values to your catalog and schema
-uc_catalog = "niall_dev"
-uc_schema = "rag"
+uc_catalog = "catalog"
+uc_schema = "schema"
 eval_table_name = "sample_eval_set"
 eval_table_fqdn = f"{uc_catalog}.{uc_schema}.{eval_table_name}"
 
@@ -394,8 +394,8 @@ with mlflow.start_run(logged_chain_info.run_id):
 
 # DBTITLE 1,Deploy the model
 # TODO: Change these values to your catalog and schema
-uc_catalog = "niall_dev"
-uc_schema = "rag"
+uc_catalog = "catalog"
+uc_schema = "schema"
 model_name = "pdf_bot"
 uc_model_fqdn = f"{uc_catalog}.{uc_schema}.{model_name}" 
 

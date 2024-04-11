@@ -231,8 +231,8 @@ winning_model_uri = configs_to_test[winning_config]["logged_chain_info"].model_u
 # COMMAND ----------
 
 # TODO: Change these values to your catalog and schema
-uc_catalog = "niall_dev"
-uc_schema = "rag"
+uc_catalog = "catalog"
+uc_schema = "schema"
 model_name = "hello_world_2"
 uc_model_fqdn = f"{uc_catalog}.{uc_schema}.{model_name}" 
 
