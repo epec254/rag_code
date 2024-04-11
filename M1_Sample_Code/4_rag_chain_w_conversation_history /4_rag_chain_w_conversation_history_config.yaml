@@ -1,5 +1,6 @@
-vector_search_endpoint_name: "vs_endpoint_name"
-vector_search_index: "catalog.schema.index_name"
+# Get the following params from the final cell of 3_pdf_rag/3_load_pdf_to_vector_index
+vector_search_endpoint_name: "vs_endpoint"
+vector_search_index: "catalog.schema.vs_index"
 # These must be set to use the Review App
 vector_search_schema:
   primary_key: chunk_id
@@ -16,3 +17,12 @@ chat_prompt_template_variables:
 chat_endpoint_parameters:
   temperature: 0.01
   max_tokens: 500
+query_rewriter_prompt_template: >
+  "Based on the chat history below, we want you to generate a query for an external data source to retrieve relevant documents so that we can better answer the question. The query should be in natual language. The external data source uses similarity search to search for relevant documents in a vector space. So the query should be similar to the relevant documents semantically. Answer with only the query. Do not add explanation.
+  
+  Chat history: {chat_history}
+
+  Question: {question}"
+query_rewriter_prompt_template_variables:
+  - "chat_history"
+  - "question"

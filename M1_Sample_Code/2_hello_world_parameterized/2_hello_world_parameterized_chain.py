@@ -1,6 +1,6 @@
 # Databricks notebook source
 # DBTITLE 1,Install RAG Studio packages
-# MAGIC %run ./wheel_installer
+# MAGIC %run ../wheel_installer
 
 # COMMAND ----------
 
@@ -9,10 +9,12 @@ dbutils.library.restartPython()
 
 # COMMAND ----------
 
+from operator import itemgetter
+
+from databricks import rag 
+
 from langchain_core.output_parsers import StrOutputParser
 from langchain.schema.runnable import RunnableLambda
-from operator import itemgetter
-from databricks import rag
 
 # COMMAND ----------
 
@@ -35,7 +37,7 @@ def extract_chat_history(chat_messages_array):
 ############
 # Get the configuration YAML
 ############
-rag_config = rag.RagConfig("2_hello_world_config.yaml")
+rag_config = rag.RagConfig("configs/2_hello_world_config.yaml")
 
 ############
 # Fake model for this hello world example.

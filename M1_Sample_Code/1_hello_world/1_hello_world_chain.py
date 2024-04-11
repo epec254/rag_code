@@ -1,6 +1,6 @@
 # Databricks notebook source
 # DBTITLE 1,Install RAG Studio packages
-# MAGIC %run ./wheel_installer
+# MAGIC %run ../wheel_installer
 
 # COMMAND ----------
 
@@ -9,10 +9,12 @@ dbutils.library.restartPython()
 
 # COMMAND ----------
 
+from operator import itemgetter
+
+from databricks.rag import set_chain
+
 from langchain_core.output_parsers import StrOutputParser
 from langchain.schema.runnable import RunnableLambda
-from operator import itemgetter
-from databricks.rag import set_chain
 
 # COMMAND ----------
 
