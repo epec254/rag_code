@@ -14,15 +14,16 @@
 # COMMAND ----------
 
 # DBTITLE 1,Import packages
+from operator import itemgetter
+
+from databricks import rag
+from databricks.vector_search.client import VectorSearchClient
+from langchain.schema.runnable import RunnableLambda
 from langchain_community.chat_models import ChatDatabricks
 from langchain_community.vectorstores import DatabricksVectorSearch
-from databricks.vector_search.client import VectorSearchClient
-from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
-from langchain.schema.runnable import RunnableLambda
-from operator import itemgetter
-from databricks import rag 
 
 # COMMAND ----------
 
@@ -160,7 +161,7 @@ rag.set_chain(chain)
 # COMMAND ----------
 
 # DBTITLE 1,RAG Experimental Execution Command
-# %run ./RAG_Experimental_Code
+# %run ../RAG_Experimental_Code
 
 # COMMAND ----------
 
