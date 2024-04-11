@@ -26,7 +26,7 @@ We suggest following the below tutorials to get started, but you can also refer 
 ### Creating a chain
 First, let's create the most minimal chain in RAG Studio.  This tutorial will familarize you with the basics of the development workflow and the chain input/output schema.
 
-When using RAG Studio, you create your chain code using LangChain inside a Notebook.  Open the [`hello_world_chain`](M1_Sample_Code/1_hello_world_chain.py) Notebook, review the commented code, and try running it.
+When using RAG Studio, you create your chain code using LangChain inside a Notebook.  Open the [`hello_world_chain`](M1_Sample_Code/1_hello_world/1_hello_world_chain.py) Notebook, review the commented code, and try running it.
 
 Note: If you need support for Python based chains, please reach out to our team.
 
@@ -34,7 +34,7 @@ Note: If you need support for Python based chains, please reach out to our team.
 
 Now, let's log this chain to MLflow and deploy it to the Review App.
 
-When using RAG Studio, you create, evaluate, and deploy new versions of your chain using a "Driver" notebook.  For now, let's just log and deploy the chain.  Open the [`1_hello_world_driver_notebook`](M1_Sample_Code/1_hello_world_driver_notebook.py) Notebook, review the code, and try running it.
+When using RAG Studio, you create, evaluate, and deploy new versions of your chain using a "Driver" notebook.  For now, let's just log and deploy the chain.  Open the [`1_hello_world_driver_notebook`](M1_Sample_Code/1_hello_world/1_hello_world_driver_notebook.py) Notebook, review the code, and try running it.
 
 If successful, you will be able to chat with your hello world chain in the Review App.
 
@@ -44,9 +44,9 @@ If successful, you will be able to chat with your hello world chain in the Revie
 
 RAG Studio supports parameterizing your chains - this allows you to quickly iterate on quality related parameters (such as the prompt or retriever configuruation) while holding the chain's code constant.
 
-Parameterization is based on a YAML file.  Open [`2_hello_world_config.yaml`](M1_Sample_Code/2_hello_world_config.yaml) for an example of the configuration file - the structure of the YAML is up to you, although in the next tutorial, you will see our suggested structure.
+Parameterization is based on a YAML file.  Open [`2_hello_world_config.yaml`](M1_Sample_Code/2_hello_world_parameterized/2_hello_world_config.yaml) for an example of the configuration file - the structure of the YAML is up to you, although in the next tutorial, you will see our suggested structure.
 
-Open [`2_hello_world_parameterized_chain`](M1_Sample_Code/2_hello_world_parameterized_chain.py) and [`2_hello_world_parameterized_driver_notebook`](M1_Sample_Code/2_hello_world_parameterized_driver_notebook.py) to see how this works in practice.
+Open [`2_hello_world_parameterized_chain`](M1_Sample_Code/2_hello_world_parameterized/2_hello_world_parameterized_chain.py) and [`2_hello_world_parameterized_driver_notebook`](M1_Sample_Code/2_hello_world_parameterized/2_hello_world_parameterized_driver_notebook.py) to see how this works in practice.
 
 
 How to access configuration settings:
@@ -68,26 +68,26 @@ Create a UC Volume and load PDF files.  You can use the PDFs from the directory 
 
 ### Create a Vector Index
 
-Open and follow the steps in the notebook [`3_load_pdf_to_vector_index`](M1_Sample_Code/3_load_pdf_to_vector_index.py) to load PDF files from the UC Volume to a Vector Index.  The sample notebook uses the BGE embedding model hosted on FMAPI, but later tutorials show you how to use OpenAI's embedding models.
+Open and follow the steps in the notebook [`3_load_pdf_to_vector_index`](M1_Sample_Code/3_pdf_rag/3_load_pdf_to_vector_index.py) to load PDF files from the UC Volume to a Vector Index.  The sample notebook uses the BGE embedding model hosted on FMAPI, but later tutorials show you how to use OpenAI's embedding models.
 
 ### Prototype a RAG Chain
 
-1. Take the output from the last cell in the [`3_load_pdf_to_vector_index`](M1_Sample_Code/3_load_pdf_to_vector_index.py) notebook and overwrite the first few lines of the [`3_rag_chain_config.yaml`](M1_Sample_Code/3_rag_chain_config.yaml) configuration so your chain can use the vector index you just created.
+1. Take the output from the last cell in the [`3_load_pdf_to_vector_index`](M1_Sample_Code/3_pdf_rag/3_load_pdf_to_vector_index.py) notebook and overwrite the first few lines of the [`3_rag_chain_config.yaml`](M1_Sample_Code/3_pdf_rag/3_rag_chain_config.yaml) configuration so your chain can use the vector index you just created.
 
-2. Open the notebook [`3_rag_chain`](M1_Sample_Code/3_rag_chain.py) and run the code locally to test the chain.  This chain uses the `Databricks-DBRX-Instruct` model hosted on FMAPI.
+2. Open the notebook [`3_rag_chain`](M1_Sample_Code/3_pdf_rag/3_rag_chain.py) and run the code locally to test the chain.  This chain uses the `Databricks-DBRX-Instruct` model hosted on FMAPI.
 
 ### Log & evaluate a RAG Chain
 
 To understand the evaluation metrics and LLM judges that are used to evaluate your chain, refer to the [metrics overview](metrics.md).
 
-1. Open the notebook [`3_rag_chain_driver_notebook`](M1_Sample_Code/3_rag_chain_driver_notebook.py) to log, evaluate, and deploy the chain.
+1. Open the notebook [`3_rag_chain_driver_notebook`](M1_Sample_Code/3_pdf_rag/3_rag_chain_driver_notebook.py) to log, evaluate, and deploy the chain.
 2. Share the deployed Review App with your users to interact with the chain and provide feedback.
 
 # Advanced examples & tutorials
 
 ## 4. Multi-turn converastion
 
-The chain [`4_rag_chain_w_conversation_history`](M1_Sample_Code/4_rag_chain_w_conversation_history.py) and [`4_rag_chain_w_conversation_history_config.yaml`](M1_Sample_Code/4_rag_chain_w_conversation_history_config.yaml) is an example showing you how to enable multi-turn conversation with a query re-writer prompt.  You can use this example with the driver notebook from Tutorial #3.
+The chain [`4_rag_chain_w_conversation_history`](M1_Sample_Code/4_rag_chain_w_conversation_history/4_rag_chain_w_conversation_history.py) and [`4_rag_chain_w_conversation_history_config.yaml`](M1_Sample_Code/4_rag_chain_w_conversation_history/4_rag_chain_w_conversation_history_config.yaml) is an example showing you how to enable multi-turn conversation with a query re-writer prompt.  You can use this example with the driver notebook from Tutorial #3.
 
 ## 5. Advanced Evaluation
 ### 5a. Using RAG Evaluation Suite without RAG Studio
