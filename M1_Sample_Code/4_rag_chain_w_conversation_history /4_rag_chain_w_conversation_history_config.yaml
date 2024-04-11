@@ -1,5 +1,6 @@
-vector_search_endpoint_name: "vs_endpoint_name"
-vector_search_index: "catalog.schema.index_name"
+# Get the following params from the final cell of 3_pdf_rag/3_load_pdf_to_vector_index
+vector_search_endpoint_name: "rag_endpoint"
+vector_search_index: "niall_dev.rag.gold_rag_demo_pdfs_chunked_index"
 # These must be set to use the Review App
 vector_search_schema:
   primary_key: chunk_id
