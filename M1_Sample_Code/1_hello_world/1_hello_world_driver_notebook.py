@@ -20,7 +20,7 @@
 # COMMAND ----------
 
 # DBTITLE 1,Databricks RAG Studio Installer
-# MAGIC %run ./wheel_installer
+# MAGIC %run ../wheel_installer
 
 # COMMAND ----------
 
@@ -36,8 +36,10 @@ dbutils.library.restartPython()
 # DBTITLE 1,Imports
 import os
 
-from databricks import rag_studio
 import mlflow
+from databricks import rag_studio
+
+mlflow.set_registry_uri('databricks-uc')
 
 ### START: Ignore this code, temporary workarounds given the Private Preview state of the product
 from mlflow.utils import databricks_utils as du
@@ -60,18 +62,11 @@ def parse_deployment_info(deployment_info):
 # COMMAND ----------
 
 # DBTITLE 1,Setup
-############
 # Specify the full path to the chain notebook
-############
-
-# Assuming your chain notebook is in the current directory, this helper line grabs the current path, prepending /Workspace/
-# Limitation: RAG Studio does not support logging chains stored in Repos
-current_path = '/Workspace' + os.path.dirname(dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get())
-
 chain_notebook_file = "1_hello_world_chain"
-chain_notebook_path = f"{current_path}/{chain_notebook_file}"
+chain_notebook_path = os.path.join(os.getcwd(), chain_notebook_file)
 
-print(f"Saving chain from: {chain_notebook_path}")
+print(f"Chain notebook path: {chain_notebook_path}")
 
 # COMMAND ----------
 
@@ -142,12 +137,12 @@ model.invoke(example_input)
 
 # COMMAND ----------
 
+# Change these values to your catalog and schema
 uc_catalog = "niall_dev"
 uc_schema = "rag"
 model_name = "hello_world"
 uc_model_fqdn = f"{uc_catalog}.{uc_schema}.{model_name}" 
 
-mlflow.set_registry_uri('databricks-uc')
 uc_registered_chain_info = mlflow.register_model(logged_chain_info.model_uri, uc_model_fqdn)
 
 # COMMAND ----------

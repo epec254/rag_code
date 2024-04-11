@@ -19,7 +19,7 @@
 # COMMAND ----------
 
 # DBTITLE 1,Databricks RAG Studio Installer
-# MAGIC %run ./wheel_installer
+# MAGIC %run ../wheel_installer
 
 # COMMAND ----------
 
@@ -34,9 +34,11 @@ dbutils.library.restartPython()
 
 # DBTITLE 1,Imports
 import os
+
 import mlflow
-import yaml
 from databricks import rag_studio
+
+mlflow.set_registry_uri('databricks-uc')
 
 ### START: Ignore this code, temporary workarounds given the Private Preview state of the product
 from mlflow.utils import databricks_utils as du
@@ -59,34 +61,28 @@ def parse_deployment_info(deployment_info):
 # COMMAND ----------
 
 # DBTITLE 1,Setup
-############
 # Specify the full path to the chain notebook & config YAML
-############
-
-# Assuming your chain notebook is in the current directory, this helper line grabs the current path, prepending /Workspace/
-# Limitation: RAG Studio does not support logging chains stored in Repos
 current_path = '/Workspace' + os.path.dirname(dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get())
 
 chain_notebook_file = "2_hello_world_parameterized_chain"
 chain_config_file = "2_hello_world_config.yaml"
-chain_notebook_path = f"{current_path}/{chain_notebook_file}"
-chain_config_path = f"{current_path}/{chain_config_file}"
 
-print(f"Saving chain from: {chain_notebook_path}, config from: {chain_config_path}")
+chain_notebook_path = os.path.join(current_path, chain_notebook_file)
+chain_config_path = os.path.join(current_path, "configs", chain_config_file)
+
+print(f"Chain notebook path: {chain_notebook_path}")
+print(f"Chain config path: {chain_config_path}")
 
 # COMMAND ----------
 
-# MAGIC %md 
+# MAGIC %md
 # MAGIC ## Log the chain to MLflow and test locally
 # MAGIC
-# MAGIC * Here we log the chain as is, without using any conig YAML files
+# MAGIC Log the chain to the Notebook's MLflow Experiment inside a Run. The model is logged to the Notebook's MLflow Experiment as a run.
+# MAGIC
+# MAGIC **NOTE:** Here we log the chain as is. The config file for this chain is specified in the chain notebook
 
 # COMMAND ----------
-
-############
-# Log the chain to the Notebook's MLflow Experiment inside a Run
-# The model is logged to the Notebook's MLflow Experiment as a run
-############
 
 logged_chain_info = rag_studio.log_model(code_path=chain_notebook_path)
 
@@ -156,7 +152,7 @@ for config_name, config in configs_to_test.items():
     
     # Write the config to a YAML
     yaml_file = f"2_hello_world_config_{config_name}.yaml"
-    yaml_path = os.path.join(current_path, yaml_file)
+    yaml_path = os.path.join(current_path, "configs", yaml_file)
     with open(yaml_path, "w") as file:
         yaml.dump(config, file)  
     print(yaml.dump(config))
@@ -199,12 +195,12 @@ model_input = {
     ]
 }
 
-for config_to_test in configs_to_test:
-    print(f"Config: {config_to_test['name']}")
-    chain = mlflow.langchain.load_model(config_to_test['logged_chain_info'].model_uri)
+for config_name in configs_to_test:
+    print(f"Config: {config_name}")
+    config = configs_to_test[config_name]
+    chain = mlflow.langchain.load_model(config['logged_chain_info'].model_uri)
     print(chain.invoke(model_input))
     print("--\n")
-
 
 # COMMAND ----------
 
