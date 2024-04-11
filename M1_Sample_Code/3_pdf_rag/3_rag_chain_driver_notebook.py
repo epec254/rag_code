@@ -1,10 +1,36 @@
 # Databricks notebook source
+# MAGIC %md
+# MAGIC
+# MAGIC # 3. PDF RAG Driver Notebook
+# MAGIC
+# MAGIC This notebook demonstrates how to use Databricks RAG Studio to log and evaluate a RAG chain with a [Databricks Vector Search](https://docs.databricks.com/en/generative-ai/vector-search.html) retrieval component. Note that you will have to first create a vector search endpoint, and a vector search index in order to run this notebook. Please first run the [`3_load_pdf_to_vector_index` notebook]($3_load_pdf_to_vector_index) first to set up this infrastructure. Refer to [the following documentation](https://docs.databricks.com/en/generative-ai/vector-search.html#how-to-set-up-vector-search) for more information on this. 
+# MAGIC
+# MAGIC This notebook covers the following steps:
+# MAGIC
+# MAGIC 1. Install required libraries and import required modules
+# MAGIC 3. Define paths for the chain notebook and config YAML
+# MAGIC 4. Log the chain to MLflow and test it locally, viewing the trace
+# MAGIC 5. Evaluate the chain using an eval dataset
+# MAGIC 6. Deploy the chain
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC # Install Dependencies
+
+# COMMAND ----------
+
 # DBTITLE 1,Databricks RAG Studio Installer
 # MAGIC %run ../wheel_installer
 
 # COMMAND ----------
 
 dbutils.library.restartPython() 
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC # Imports
 
 # COMMAND ----------
 
@@ -36,7 +62,7 @@ def parse_deployment_info(deployment_info):
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC # Configure the driver notebook 
+# MAGIC # Define paths for chain notebook and config YAML
 
 # COMMAND ----------
 
@@ -55,7 +81,7 @@ print(f"Chain config path: {chain_config_path}")
 
 # MAGIC %md
 # MAGIC
-# MAGIC ## Log the chain
+# MAGIC # Log the chain
 # MAGIC Log the chain to the Notebook's MLflow Experiment inside a Run. The model is logged to the Notebook's MLflow Experiment as a run.
 
 # COMMAND ----------
