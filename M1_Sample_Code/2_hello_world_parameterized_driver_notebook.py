@@ -212,11 +212,39 @@ for config_to_test in configs_to_test:
 # MAGIC ## Deploy winning chain
 # MAGIC
 # MAGIC * Once the best performing chain has been determined, we can deploy that chain.
+# MAGIC * For the purpose of demonstration, let's assume that we have found `config_2` to yield the highest quality chain
 
 # COMMAND ----------
 
-configs_to_test
+# Define winning config 
+winning_config = "config_2"
+print("Winning config: ", configs_to_test[winning_config])
+
+winning_model_uri = configs_to_test[winning_config]["logged_chain_info"].model_uri
 
 # COMMAND ----------
 
+############
+# To deploy the winning chain, first register the chain from the MLflow Run as a Unity Catalog model.
+############
+uc_catalog = "niall_dev"
+uc_schema = "rag"
+model_name = "hello_world_2"
+uc_model_fqdn = f"{uc_catalog}.{uc_schema}.{model_name}" 
 
+mlflow.set_registry_uri('databricks-uc')
+uc_registered_chain_info = mlflow.register_model(winning_model_uri, uc_model_fqdn)
+
+# COMMAND ----------
+
+############
+# Deploy the chain to:
+# 1) Review App so you & your stakeholders can chat with the chain & given feedback via a web UI.
+# 2) Chain REST API endpoint to call the chain from your front end
+# 3) Feedback REST API endpoint to pass feedback back from your front end.
+############
+
+deployment_info = rag_studio.deploy_model(uc_model_fqdn, uc_registered_chain_info.version)
+print(parse_deployment_info(deployment_info))
+
+# Note: It can take up to 15 minutes to deploy - we are working to reduce this time to seconds.
