@@ -85,9 +85,9 @@ To understand the evaluation metrics and LLM judges that are used to evaluate yo
 
 # Advanced examples & tutorials
 
-## 4. Multi-turn converastion
+## 4. Multi-turn conversation
 
-The chain [`4_rag_chain_w_conversation_history`](M1_Sample_Code/4_rag_chain_w_conversation_history/4_rag_chain_w_conversation_history.py) and [`4_rag_chain_w_conversation_history_config.yaml`](M1_Sample_Code/4_rag_chain_w_conversation_history/4_rag_chain_w_conversation_history_config.yaml) is an example showing you how to enable multi-turn conversation with a query re-writer prompt.  You can use this example with the driver notebook from Tutorial #3.
+The chain [`4_rag_chain_w_conversation_history`](M1_Sample_Code/4_rag_chain_w_conversation_history/4_rag_chain_w_conversation_history.py) and [`4_rag_chain_w_conversation_history_config.yaml`](M1_Sample_Code/4_rag_chain_w_conversation_history/4_rag_chain_w_conversation_history_config.yaml) is an example showing you how to enable multi-turn conversation with a query re-writer prompt.  The accompanying driver notebook [`4_rag_chain_w_conversation_history_driver_notebook`](M1_Sample_Code/4_rag_chain_w_conversation_history/4_rag_chain_w_conversation_history_driver_notebook.py) follows the same workflow as the driver notebook from [Tutorial 3](M1_Sample_Code/3_pdf_rag) to log and evaluate this chain.
 
 ## 5. Advanced Evaluation
 ### 5a. Using RAG Evaluation Suite without RAG Studio
