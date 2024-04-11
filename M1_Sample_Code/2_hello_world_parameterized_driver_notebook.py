@@ -143,32 +143,36 @@ configs_to_test = [
     {"name": "config_2", "config": {"sample_param": "do a different thing"}},
 ]
 
-# Log each configuration to an MLflow Run
-for config_to_test in configs_to_test:
-    print(f"Config: {config_to_test['name']}")
-    # write the config to a YAML
-    yaml_string = yaml.dump(config_to_test["config"])
-    print(yaml_string)
-    yaml_file = f"2_hello_world_config_{config_to_test['name']}.yaml"
-    with open(yaml_file, "w") as file:
-        file.write(yaml_string)
-    yaml_path = f"{current_path}/{yaml_file}"
+# Create dict of configs
+# This JSON structure `{"sample_param": "do this thing"}` mirrors the keys in the 2_hello_world_config.yaml file
+configs_to_test = {
+    "config_1": {"sample_param": "do this thing"},
+    "config_2": {"sample_param": "do a different thing"}
+}
 
+# Log each configuration to an MLflow Run
+for config_name, config in configs_to_test.items():
+    print(f"Config: {config_name}")
+    
+    # Write the config to a YAML
+    yaml_file = f"2_hello_world_config_{config_name}.yaml"
+    yaml_path = os.path.join(current_path, yaml_file)
+    with open(yaml_path, "w") as file:
+        yaml.dump(config, file)  
+    print(yaml.dump(config))
+    
     # Log the chain w/ the config to an MLflow Run in the Notebook's Experiment
     logged_chain_info = rag_studio.log_model(
         code_path=chain_notebook_path, config_path=yaml_path
     )
     # Tag the MLflow run
-    client.set_tag(logged_chain_info.run_id, "config_name", config_to_test['name'])
+    client.set_tag(logged_chain_info.run_id, "config_name", config_name)
+    
+    configs_to_test[config_name]["logged_chain_info"] = logged_chain_info
+    
     print(f"MLflow Run: {logged_chain_info.run_id}")
     print(f"Model URI: {logged_chain_info.model_uri}")
-    config_to_test["logged_chain_info"] = logged_chain_info
-    print("--\n")
-
-# COMMAND ----------
-
-configs_to_test = {"config_1": {"sample_param": "do this thing"},
-                   "config_2": {"sample_param": "do a different thing"}}
+    print("--\n")    
 
 # COMMAND ----------
 
