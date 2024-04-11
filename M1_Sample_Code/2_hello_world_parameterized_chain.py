@@ -9,10 +9,12 @@
 
 # COMMAND ----------
 
+from operator import itemgetter
+
+from databricks import rag 
+
 from langchain_core.output_parsers import StrOutputParser
 from langchain.schema.runnable import RunnableLambda
-from operator import itemgetter
-from databricks import rag
 
 # COMMAND ----------
 

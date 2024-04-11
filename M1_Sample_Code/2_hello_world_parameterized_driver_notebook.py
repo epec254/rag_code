@@ -1,10 +1,34 @@
 # Databricks notebook source
+# MAGIC %md
+# MAGIC
+# MAGIC # 2_hello_world_parameterized_chain
+# MAGIC
+# MAGIC This notebook demonstrates how to use Databricks RAG Studio to log and test chains with different configurations. It covers the following steps:
+# MAGIC
+# MAGIC 1. Install required libraries and import required modules
+# MAGIC 3. Define paths for the chain notebook and config YAML
+# MAGIC 4. Log the chain to MLflow and test it locally
+# MAGIC 5. Test different chain configurations to improve quality
+# MAGIC 6. Log and evaluate the chain with different configurations
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Install Dependencies
+
+# COMMAND ----------
+
 # DBTITLE 1,Databricks RAG Studio Installer
 # MAGIC %run ./wheel_installer
 
 # COMMAND ----------
 
 dbutils.library.restartPython() 
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Imports
 
 # COMMAND ----------
 
@@ -29,6 +53,11 @@ def parse_deployment_info(deployment_info):
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ## Define paths for chain notebook and config YAML
+
+# COMMAND ----------
+
 # DBTITLE 1,Setup
 ############
 # Specify the full path to the chain notebook & config YAML
@@ -47,7 +76,10 @@ print(f"Saving chain from: {chain_notebook_path}, config from: {chain_config_pat
 
 # COMMAND ----------
 
-# MAGIC %md ## First, let's test the model as-is
+# MAGIC %md 
+# MAGIC ## Log the chain to MLflow and test locally
+# MAGIC
+# MAGIC * Here we log the chain as is, without using any conig YAML files
 
 # COMMAND ----------
 
@@ -88,9 +120,13 @@ model.invoke(example_input)
 
 # MAGIC %md
 # MAGIC
-# MAGIC ## Use configuration to test various parameters to improve quality
+# MAGIC ## Test different chain configurations to improve quality
 # MAGIC
+# MAGIC * We log the same chain, but with different config files. This simulates iterating over different chain parameters and logging the resulting 
+# MAGIC chains
+# MAGIC * In this instance we log two different chains, with two different configs YAMLs to two separate MLflow runs. This will subsequently allow us to load these distinct chains from their respective MLflow runs and evaluate them.
 # MAGIC
+# MAGIC **NOTE:** The chains have not been deployed at this point. We are simply logging the chain artifacts to MLflow.
 
 # COMMAND ----------
 
@@ -131,6 +167,20 @@ for config_to_test in configs_to_test:
 
 # COMMAND ----------
 
+configs_to_test = {"config_1": {"sample_param": "do this thing"},
+                   "config_2": {"sample_param": "do a different thing"}}
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Evaluate the chains
+# MAGIC
+# MAGIC * Within a notebook setting, we can load in the separate chains, and query them with `chain.invoke()`
+# MAGIC * Here we iteratively load in the two separate logged chains, and query them with `model_input`
+# MAGIC * This is a simplified approach for demonstration. In a practical setting we recommend using `rag.evaluate()` to more robustly evaluate the chain
+
+# COMMAND ----------
+
 ############
 # Now, let's test both models locally
 # In the actual usage, you would use rag.evaluate(...) to run LLM judge and evaluate each chain's quality/cost/latency.
@@ -150,4 +200,19 @@ for config_to_test in configs_to_test:
     chain = mlflow.langchain.load_model(config_to_test['logged_chain_info'].model_uri)
     print(chain.invoke(model_input))
     print("--\n")
+
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Deploy winning chain
+# MAGIC
+# MAGIC * Once the best performing chain has been determined, we can deploy that chain.
+
+# COMMAND ----------
+
+configs_to_test
+
+# COMMAND ----------
+
 
