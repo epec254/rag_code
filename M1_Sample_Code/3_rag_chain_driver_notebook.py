@@ -14,6 +14,13 @@ from databricks import rag_studio, rag_eval, rag
 import json
 import html
 
+############
+# Private Preview Feature MLflow Tracing
+# RAG Studio dependes on MLflow to show a trace of your chain. The trace can help you easily debug your chain and keep track of inputs & responses your chain performs well or performs poorly.
+############
+
+mlflow.langchain.autolog()
+
 ### START: Ignore this code, temporary workarounds given the Private Preview state of the product
 from mlflow.utils import databricks_utils as du
 os.environ['MLFLOW_ENABLE_ARTIFACTS_PROGRESS_BAR'] = "false"

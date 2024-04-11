@@ -26,6 +26,16 @@ from databricks import rag
 
 # COMMAND ----------
 
+############
+# Private Preview Feature MLflow Tracing
+# RAG Studio dependes on MLflow to show a trace of your chain. The trace can help you easily debug your chain and keep track of inputs & responses your chain performs well or performs poorly.
+############
+
+import mlflow
+mlflow.langchain.autolog()
+
+# COMMAND ----------
+
 # DBTITLE 1,Multistage Chat Joke Generator
 ############
 # RAG Studio requires your chain to accept an array of OpenAI-formatted messages as a `messages` parameter. Schema: https://docs.databricks.com/en/machine-learning/foundation-models/api-reference.html#chatmessage
@@ -167,44 +177,3 @@ print(chain.invoke(model_input_sample))
 # Tell RAG Studio about the chain - required for logging, but not local testing of this chain
 ############
 rag.set_chain(chain)
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ## Experimental: view trace locally
-# MAGIC
-# MAGIC ⚠️⚠️ 🐛🐛 Experimental features likely have bugs! 🐛🐛 ⚠️⚠️
-# MAGIC
-# MAGIC We are actively improving the trace logging schema - the schema will change in the next release.
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC
-# MAGIC **IMPORTANT: This code must be commented out in order to log the model**
-
-# COMMAND ----------
-
-# DBTITLE 1,RAG Experimental Execution Command
-# %run ./RAG_Experimental_Code
-
-# COMMAND ----------
-
-# DBTITLE 1,Escaped JSON Display Generator
-
-# import json
-# import html
-
-# json_trace = experimental_get_json_trace(chain, model_input_sample)
-
-# json_string = json.dumps(json_trace, indent=4)
-
-# # Escape HTML characters to avoid XSS or rendering issues
-# escaped_json_string = html.escape(json_string)
-
-# # Generate HTML with the escaped JSON inside <pre> and <code> tags
-# pretty_json_html = f"<html><body><pre><code>{escaped_json_string}</code></pre></body></html>"
-
-# # To use the HTML string in a context that renders HTML, 
-# # such as a web application or a notebook cell that supports HTML output
-# displayHTML(pretty_json_html)
