@@ -6,17 +6,17 @@
 # MAGIC
 # MAGIC Getting the right parsing and chunk size requires iteration and a working knowledge of your data - this pipeline is easy to adapt and tweak in order to add more advanced logic.
 # MAGIC
-# MAGIC Limitations: 
+# MAGIC **Limitations:**
 # MAGIC - This pipeline resets the index every time, mirroring the index to the files in the UC Volume.  A future iteration will only update added/changed/removed files.
 # MAGIC - Splitting based on tokens requires a cluster with internet access.  If you do not have internet access on your cluster, adjust the gold parsing step.
-# MAGIC - Can't change column names in the Vector Index after the tables are initially created - to change column names, delete the Vector Index and re-sync.
+# MAGIC - You can't change column names in the Vector Index after the tables are initially created - to change column names, delete the Vector Index and re-sync.
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC # How To / Getting Started
+# MAGIC # Getting Started
 # MAGIC
-# MAGIC 1. To get started, press `Run All`.  
+# MAGIC 1. To get started, `Run All`.  
 # MAGIC 2. You will be alerted to any configuration settings you need to config or issues you need to resolve.  
 # MAGIC 3. After you resolve an issue or set a configuration setting, press `Run All` again to verify your changes.  
 # MAGIC   *Note: Dropdown configurations will take a few seconds to load the values.*
@@ -29,31 +29,32 @@
 
 # COMMAND ----------
 
-# MAGIC %pip install -U --quiet pypdf==4.1.0 databricks-sdk langchain==0.1.13
+# MAGIC %pip install -U --quiet pypdf==4.1.0 databricks-sdk langchain==0.1.13 tokenizers torch transformers
 # MAGIC dbutils.library.restartPython()
 
 # COMMAND ----------
 
-import io
-from databricks.sdk import WorkspaceClient
-from databricks.sdk.errors import NotFound, ResourceDoesNotExist
-from databricks.sdk.service.vectorsearch import (
-    EndpointType,
-    DeltaSyncVectorIndexSpecRequest,
-    VectorIndexType,
-    EmbeddingSourceColumn,
-    PipelineType,
-    EndpointStatusState
-)
-import pyspark.sql.functions as func
-from pyspark.sql.types import MapType, StringType
-from pypdf import PdfReader
-from langchain.text_splitter import RecursiveCharacterTextSplitter, CharacterTextSplitter
-from pyspark.sql import Column
-from pyspark.sql.types import *
 from datetime import timedelta
 from typing import List
 import warnings
+
+from databricks.sdk import WorkspaceClient
+from databricks.sdk.errors import NotFound, ResourceDoesNotExist
+from databricks.sdk.service.vectorsearch import (
+    DeltaSyncVectorIndexSpecRequest,
+    EmbeddingSourceColumn,
+    EndpointStatusState,
+    EndpointType,
+    PipelineType,
+    VectorIndexType,
+)
+from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
+from pyspark.sql import Column
+from pyspark.sql.types import *
+import pyspark.sql.functions as F
+from pypdf import PdfReader
+
+import io
 
 # Init workspace client
 w = WorkspaceClient()
@@ -361,6 +362,8 @@ else:
 
 # MAGIC %md
 # MAGIC ## Bronze: Load the files from the UC Volume
+# MAGIC
+# MAGIC **NOTE:** You will have to upload some PDF files to this volume. See the `sample_pdfs` folder of this repo for some example PDFs to upload to the UC Volume.
 
 # COMMAND ----------
 
@@ -402,7 +405,7 @@ if bronze_df.count() == 0:
 # If using runtime < 14.3, remove `useArrow=True`
 # useArrow=True which optimizes performance only works with 14.3+
 
-@func.udf(
+@F.udf(
     returnType=StructType(
         [
             StructField("number_pages", IntegerType(), nullable=True),
@@ -433,7 +436,7 @@ def parse_pdf(pdf_raw_bytes):
 df_parsed = bronze_df.withColumn("parsed_output", parse_pdf("content")).drop("content")
 
 # Check and warn on any errors
-num_errors = df_parsed.filter(func.col("parsed_output.status") != "SUCCESS").count()
+num_errors = df_parsed.filter(F.col("parsed_output.status") != "SUCCESS").count()
 if num_errors > 0:
     warning.warn(f"{num_errors} documents had parse errors.  Please review.")
 
@@ -441,7 +444,7 @@ df_parsed.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(
 
 # reload to get correct lineage in UC and to filter out any error rows for the downstream step.
 df_parsed = spark.read.table(silver_parsed_files_table_name).filter(
-    func.col("parsed_output.status") == "SUCCESS"
+    F.col("parsed_output.status") == "SUCCESS"
 )
 
 display(df_parsed)
@@ -455,7 +458,7 @@ display(df_parsed)
 # MAGIC If you are using a cluster without internet access, remove the below cell and replace the udf with
 # MAGIC
 # MAGIC ```
-# MAGIC @func.udf(returnType=ArrayType(StringType()), useArrow=True)
+# MAGIC @F.udf(returnType=ArrayType(StringType()), useArrow=True)
 # MAGIC def split_char_recursive(content: str) -> List[str]:
 # MAGIC     text_splitter = RecursiveCharacterTextSplitter(
 # MAGIC         chunk_size=chunk_size, chunk_overlap=chunk_overlap
@@ -463,10 +466,6 @@ display(df_parsed)
 # MAGIC     chunks = text_splitter.split_text(content)
 # MAGIC     return [doc for doc in chunks]
 # MAGIC ```
-
-# COMMAND ----------
-
-# MAGIC %pip install --quiet tokenizers torch transformers
 
 # COMMAND ----------
 
@@ -489,7 +488,7 @@ CHUNK_ID_COLUMN_NAME = "chunk_id"
 # useArrow=True which optimizes performance only works with 14.3+
 
 # TODO: Add error handling
-@func.udf(returnType=ArrayType(StringType())
+@F.udf(returnType=ArrayType(StringType())
           # useArrow=True, # set globally
           )
 def split_char_recursive(content: str) -> List[str]:
@@ -501,10 +500,10 @@ def split_char_recursive(content: str) -> List[str]:
 
 
 df_chunked = df_parsed.select(
-    "*", func.explode(split_char_recursive("parsed_output.text")).alias(CHUNK_COLUMN_NAME)
-).drop(func.col("parsed_output"))
+    "*", F.explode(split_char_recursive("parsed_output.text")).alias(CHUNK_COLUMN_NAME)
+).drop(F.col("parsed_output"))
 df_chunked = df_chunked.select(
-    "*", func.md5(func.col(CHUNK_COLUMN_NAME)).alias(CHUNK_ID_COLUMN_NAME)
+    "*", F.md5(F.col(CHUNK_COLUMN_NAME)).alias(CHUNK_ID_COLUMN_NAME)
 )
 
 df_chunked.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(gold_chunks_table_name)
@@ -568,6 +567,8 @@ print(f"Gold Delta Table w/ chunked files: {get_table_url(gold_chunks_table_name
 
 # MAGIC %md
 # MAGIC ## Copy paste code for the RAG Chain YAML config
+# MAGIC
+# MAGIC * The following prints the configs used so that you can copy and paste them into your RAG YAML config
 
 # COMMAND ----------
 
