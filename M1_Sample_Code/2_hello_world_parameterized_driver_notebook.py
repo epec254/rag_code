@@ -1,7 +1,7 @@
 # Databricks notebook source
 # MAGIC %md
 # MAGIC
-# MAGIC # 2_hello_world_parameterized_chain
+# MAGIC # 2. Hello World Parameterized Driver Notebook
 # MAGIC
 # MAGIC This notebook demonstrates how to use Databricks RAG Studio to log and test chains with different configurations. It covers the following steps:
 # MAGIC

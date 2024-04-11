@@ -1,10 +1,35 @@
 # Databricks notebook source
+# MAGIC %md
+# MAGIC # 1. Hello World Driver Notebook
+# MAGIC
+# MAGIC This notebook demonstrates how to log, test, and deploy a simple "Hello World" chain using Databricks RAG Studio. It covers the following steps:
+# MAGIC
+# MAGIC 1. Install Databricks RAG Studio
+# MAGIC 2. Import required modules
+# MAGIC 3. Define path for the chain notebook
+# MAGIC 4. Log the chain to MLflow and test it locally
+# MAGIC 5. Register the chain as a model in Unity Catalog
+# MAGIC 6. Deploy the chain
+# MAGIC 7. View the deployed chain in the RAG Studio UI
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Install Dependencies
+
+# COMMAND ----------
+
 # DBTITLE 1,Databricks RAG Studio Installer
 # MAGIC %run ./wheel_installer
 
 # COMMAND ----------
 
 dbutils.library.restartPython()
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Imports
 
 # COMMAND ----------
 
@@ -29,6 +54,11 @@ def parse_deployment_info(deployment_info):
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ## Define paths for chain notebook
+
+# COMMAND ----------
+
 # DBTITLE 1,Setup
 ############
 # Specify the full path to the chain notebook
@@ -45,12 +75,15 @@ print(f"Saving chain from: {chain_notebook_path}")
 
 # COMMAND ----------
 
-# DBTITLE 1,Log the model
-############
-# Log the chain to the Notebook's MLflow Experiment inside a Run
-# The model is logged to the Notebook's MLflow Experiment as a run
-############
+# MAGIC %md
+# MAGIC ## Log the chain to MLflow and test locally
+# MAGIC
+# MAGIC Log the chain to the Notebook's MLflow Experiment inside a Run. The model is logged to the Notebook's MLflow Experiment as a run.
+# MAGIC
 
+# COMMAND ----------
+
+# DBTITLE 1,Log the model
 logged_chain_info = rag_studio.log_model(code_path=chain_notebook_path)
 
 print(f"MLflow Run: {logged_chain_info.run_id}")
@@ -63,11 +96,12 @@ print(f"Model URI: {logged_chain_info.model_uri}")
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC You can test the model locally. This is the same input that the REST API will accept once deployed.
+
+# COMMAND ----------
+
 # DBTITLE 1,Run the logged model locally
-############
-# You can test the model locally
-# This is the same input that the REST API will accept once deployed.
-############
 example_input = {
     "messages": [
         {
@@ -90,15 +124,24 @@ model.invoke(example_input)
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ## Evaluate the chain
+
+# COMMAND ----------
+
 ############
 # Normally, you would now evaluate the chain, but lets skip ahead to deploying the chain so your stakeholders can use it via a chat UI.
 ############
 
 # COMMAND ----------
 
-############
-# To deploy the model, first register the chain from the MLflow Run as a Unity Catalog model.
-############
+# MAGIC %md
+# MAGIC ## Deploy chain
+# MAGIC
+# MAGIC To deploy the model, first register the chain from the MLflow Run as a Unity Catalog model.
+
+# COMMAND ----------
+
 uc_catalog = "niall_dev"
 uc_schema = "rag"
 model_name = "hello_world"
@@ -109,18 +152,31 @@ uc_registered_chain_info = mlflow.register_model(logged_chain_info.model_uri, uc
 
 # COMMAND ----------
 
-# DBTITLE 1,Deploy the model
-############
-# Deploy the chain to:
-# 1) Review App so you & your stakeholders can chat with the chain & given feedback via a web UI.
-# 2) Chain REST API endpoint to call the chain from your front end
-# 3) Feedback REST API endpoint to pass feedback back from your front end.
-############
+# MAGIC %md
+# MAGIC Deploy the chain to:
+# MAGIC 1. Review App so you & your stakeholders can chat with the chain & given feedback via a web UI.
+# MAGIC 2. Chain REST API endpoint to call the chain from your front end.
+# MAGIC 3. Feedback REST API endpoint to pass feedback back from your front end.
+# MAGIC
+# MAGIC **Note:** It can take up to 15 minutes to deploy - we are working to reduce this time to seconds.
+# MAGIC
 
+# COMMAND ----------
+
+# DBTITLE 1,Deploy the model
 deployment_info = rag_studio.deploy_model(uc_model_fqdn, uc_registered_chain_info.version)
 print(parse_deployment_info(deployment_info))
 
 # Note: It can take up to 15 minutes to deploy - we are working to reduce this time to seconds.
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC
+# MAGIC ## View deployments
+# MAGIC
+# MAGIC If you have lost the deployment information captured above, you can find it using `list_deployments()`.
+# MAGIC
 
 # COMMAND ----------
 

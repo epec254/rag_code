@@ -370,8 +370,8 @@ with mlflow.start_run(logged_chain_info.run_id):
 ############
 # To deploy the model, first register the chain from the MLflow Run as a Unity Catalog model.
 ############
-uc_catalog = "catalog"
-uc_schema = "schema"
+uc_catalog = "niall_dev"
+uc_schema = "rag"
 model_name = "pdf_bot"
 uc_model_fqdn = f"{uc_catalog}.{uc_schema}.{model_name}" 
 
