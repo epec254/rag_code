@@ -10,8 +10,9 @@ dbutils.library.restartPython()
 
 # DBTITLE 1,Imports
 import os
-import mlflow
+
 from databricks import rag_studio
+import mlflow
 
 ### START: Ignore this code, temporary workarounds given the Private Preview state of the product
 from mlflow.utils import databricks_utils as du
@@ -98,8 +99,8 @@ model.invoke(example_input)
 ############
 # To deploy the model, first register the chain from the MLflow Run as a Unity Catalog model.
 ############
-uc_catalog = "catalog"
-uc_schema = "schema"
+uc_catalog = "niall_dev"
+uc_schema = "rag"
 model_name = "hello_world"
 uc_model_fqdn = f"{uc_catalog}.{uc_schema}.{model_name}" 
 

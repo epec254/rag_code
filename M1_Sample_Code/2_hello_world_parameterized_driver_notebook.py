@@ -98,7 +98,7 @@ model.invoke(example_input)
 client = mlflow.tracking.MlflowClient()
 
 ############
-# This is a toy example, but you can use this approach to test various parameters - different prompts, foundational models, retrieval configurations, chunking settings, etc.
+# This is a toy example, but you can use this approach to test various parameters - different prompts, foundation models, retrieval configurations, chunking settings, etc.
 ############
 
 # This JSON structure `{"sample_param": "do this thing"}` mirrors the keys in the 2_hello_world_config.yaml file

@@ -5,14 +5,16 @@
 # COMMAND ----------
 
 # Before logging this chain using the driver notebook, you need to comment out this line.
-dbutils.library.restartPython() 
+# dbutils.library.restartPython() 
 
 # COMMAND ----------
 
+from operator import itemgetter
+
+from databricks.rag import set_chain
+
 from langchain_core.output_parsers import StrOutputParser
 from langchain.schema.runnable import RunnableLambda
-from operator import itemgetter
-from databricks.rag import set_chain
 
 # COMMAND ----------
 
