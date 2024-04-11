@@ -1,6 +1,6 @@
 # Databricks notebook source
 # DBTITLE 1,Databricks RAG Studio Installer
-# MAGIC %run ./wheel_installer
+# MAGIC %run ../wheel_installer
 
 # COMMAND ----------
 
@@ -8,10 +8,12 @@ dbutils.library.restartPython()
 
 # COMMAND ----------
 
-import os
-import mlflow
-from databricks import rag_studio, rag_eval, rag
 import json
+import os
+
+import mlflow
+from databricks import rag, rag_eval, rag_studio
+
 import html
 
 ### START: Ignore this code, temporary workarounds given the Private Preview state of the product
@@ -29,7 +31,7 @@ def parse_deployment_info(deployment_info):
 
 # COMMAND ----------
 
-# MAGIC %run ./RAG_Experimental_Code
+# MAGIC %run ../RAG_Experimental_Code
 
 # COMMAND ----------
 
@@ -39,31 +41,26 @@ def parse_deployment_info(deployment_info):
 # COMMAND ----------
 
 # DBTITLE 1,Setup
-############
 # Specify the full path to the chain notebook & config YAML
-############
-
-# Assuming your chain notebook is in the current directory, this helper line grabs the current path, prepending /Workspace/
-# Limitation: RAG Studio does not support logging chains stored in Repos
-current_path = '/Workspace' + os.path.dirname(dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get())
-
 chain_notebook_file = "3_rag_chain"
 chain_config_file = "3_rag_chain_config.yaml"
-chain_notebook_path = f"{current_path}/{chain_notebook_file}"
-chain_config_path = f"{current_path}/{chain_config_file}"
 
-print(f"Saving chain from: {chain_notebook_path}, config from: {chain_config_path}")
+chain_notebook_path = os.path.join(os.getcwd(), chain_notebook_file)
+chain_config_path = os.path.join(os.getcwd(), chain_config_file)
+
+print(f"Chain notebook path: {chain_notebook_path}")
+print(f"Chain config path: {chain_config_path}")
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC
 # MAGIC ## Log the chain
+# MAGIC Log the chain to the Notebook's MLflow Experiment inside a Run. The model is logged to the Notebook's MLflow Experiment as a run.
 
 # COMMAND ----------
 
 # DBTITLE 1,Log the model
-
 ############
 # Log the chain to the Notebook's MLflow Experiment inside a Run
 # The model is logged to the Notebook's MLflow Experiment as a run
@@ -226,8 +223,9 @@ eval_dataset = [
 ############
 # Turn the eval dataset into a Delta Table
 ############
-uc_catalog = "catalog"
-uc_schema = "schema"
+# TODO: Change these values to your catalog and schema
+uc_catalog = "niall_dev"
+uc_schema = "rag"
 eval_table_name = "sample_eval_set"
 eval_table_fqdn = f"{uc_catalog}.{uc_schema}.{eval_table_name}"
 
@@ -235,7 +233,7 @@ df = spark.read.json(spark.sparkContext.parallelize(eval_dataset))
 df.write.format("delta").option("mergeSchema", "true").mode("overwrite").saveAsTable(
     eval_table_fqdn
 )
-print(f"Loaded eval set to: {eval_table_fqdn}")
+print(f"Eval set written to: {eval_table_fqdn}")
 
 # COMMAND ----------
 
@@ -339,7 +337,7 @@ config_json = {
 }
 
 config_yml = yaml.dump(config_json)
-config_yml
+print(config_yml)
 
 # COMMAND ----------
 
@@ -363,13 +361,13 @@ with mlflow.start_run(logged_chain_info.run_id):
 
 # MAGIC %md
 # MAGIC # Deploy the model to the Review App
+# MAGIC
+# MAGIC To deploy the model, first register the chain from the MLflow Run as a Unity Catalog model.
 
 # COMMAND ----------
 
 # DBTITLE 1,Deploy the model
-############
-# To deploy the model, first register the chain from the MLflow Run as a Unity Catalog model.
-############
+# TODO: Change these values to your catalog and schema
 uc_catalog = "niall_dev"
 uc_schema = "rag"
 model_name = "pdf_bot"
@@ -380,12 +378,15 @@ uc_registered_chain_info = mlflow.register_model(logged_chain_info.model_uri, uc
 
 # COMMAND ----------
 
-############
-# Deploy the chain to:
-# 1) Review App so you & your stakeholders can chat with the chain & given feedback via a web UI.
-# 2) Chain REST API endpoint to call the chain from your front end
-# 3) Feedback REST API endpoint to pass feedback back from your front end.
-############
+# MAGIC %md
+# MAGIC Deploy the chain to:
+# MAGIC 1. Review App so you & your stakeholders can chat with the chain & given feedback via a web UI.
+# MAGIC 2. Chain REST API endpoint to call the chain from your front end.
+# MAGIC 3. Feedback REST API endpoint to pass feedback back from your front end.
+# MAGIC
+# MAGIC **Note:** It can take up to 15 minutes to deploy - we are working to reduce this time to seconds.
+
+# COMMAND ----------
 
 deployment_info = rag_studio.deploy_model(uc_model_fqdn, uc_registered_chain_info.version)
 print(parse_deployment_info(deployment_info))
@@ -394,10 +395,15 @@ print(parse_deployment_info(deployment_info))
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC
+# MAGIC ## View deployments
+# MAGIC
+# MAGIC If you have lost the deployment information captured above, you can find it using `list_deployments()`.
+
+# COMMAND ----------
+
 # DBTITLE 1,View deployments
-############
-# If you lost the deployment information captured above, you can find it using list_deployments()
-############
 deployments = rag_studio.list_deployments()
 for deployment in deployments:
   if deployment.model_name == uc_model_fqdn and deployment.model_version==uc_registered_chain_info.version:

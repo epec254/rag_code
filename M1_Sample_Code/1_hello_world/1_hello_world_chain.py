@@ -1,6 +1,6 @@
 # Databricks notebook source
 # DBTITLE 1,Install RAG Studio packages
-# MAGIC %run ./wheel_installer
+# MAGIC %run ../wheel_installer
 
 # COMMAND ----------
 

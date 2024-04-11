@@ -62,13 +62,11 @@ def parse_deployment_info(deployment_info):
 
 # DBTITLE 1,Setup
 # Specify the full path to the chain notebook & config YAML
-current_path = '/Workspace' + os.path.dirname(dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get())
-
 chain_notebook_file = "2_hello_world_parameterized_chain"
 chain_config_file = "2_hello_world_config.yaml"
 
-chain_notebook_path = os.path.join(current_path, chain_notebook_file)
-chain_config_path = os.path.join(current_path, "configs", chain_config_file)
+chain_notebook_path = os.path.join(os.getcwd(), chain_notebook_file)
+chain_config_path = os.path.join(os.getcwd(), "configs", chain_config_file)
 
 print(f"Chain notebook path: {chain_notebook_path}")
 print(f"Chain config path: {chain_config_path}")
@@ -132,6 +130,8 @@ model.invoke(example_input)
 # COMMAND ----------
 
 # DBTITLE 1,Example configs
+import yaml
+
 client = mlflow.tracking.MlflowClient()
 
 ############
@@ -157,7 +157,7 @@ for config_name, config in configs_to_test.items():
     
     # Write the config to a YAML
     yaml_file = f"2_hello_world_config_{config_name}.yaml"
-    yaml_path = os.path.join(current_path, "configs", yaml_file)
+    yaml_path = os.path.join(os.getcwd(), "configs", yaml_file)
     with open(yaml_path, "w") as file:
         yaml.dump(config, file)  
     print(yaml.dump(config))
@@ -230,7 +230,7 @@ winning_model_uri = configs_to_test[winning_config]["logged_chain_info"].model_u
 
 # COMMAND ----------
 
-# Change these values to your catalog and schema
+# TODO: Change these values to your catalog and schema
 uc_catalog = "niall_dev"
 uc_schema = "rag"
 model_name = "hello_world_2"

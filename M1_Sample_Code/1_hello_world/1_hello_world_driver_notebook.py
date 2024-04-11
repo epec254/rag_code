@@ -137,7 +137,7 @@ model.invoke(example_input)
 
 # COMMAND ----------
 
-# Change these values to your catalog and schema
+# TODO: Change these values to your catalog and schema
 uc_catalog = "niall_dev"
 uc_schema = "rag"
 model_name = "hello_world"
@@ -176,9 +176,6 @@ print(parse_deployment_info(deployment_info))
 # COMMAND ----------
 
 # DBTITLE 1,View deployments
-############
-# If you lost the deployment information captured above, you can find it using list_deployments()
-############
 deployments = rag_studio.list_deployments()
 for deployment in deployments:
   if deployment.model_name == uc_model_fqdn and deployment.model_version==uc_registered_chain_info.version:

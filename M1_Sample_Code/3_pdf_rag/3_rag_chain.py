@@ -1,6 +1,6 @@
 # Databricks notebook source
 # DBTITLE 1,Databricks Rag Studio Installer
-# MAGIC %run ./wheel_installer
+# MAGIC %run ../wheel_installer
 
 # COMMAND ----------
 
@@ -9,7 +9,7 @@
 # COMMAND ----------
 
 # Before logging this chain using the driver notebook, you need to comment out this line.
-dbutils.library.restartPython() 
+# dbutils.library.restartPython() 
 
 # COMMAND ----------
 
