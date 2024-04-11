@@ -18,6 +18,16 @@ from langchain.schema.runnable import RunnableLambda
 
 # COMMAND ----------
 
+############
+# Private Preview Feature MLflow Tracing
+# RAG Studio dependes on MLflow to show a trace of your chain. The trace can help you easily debug your chain and keep track of inputs & responses your chain performs well or performs poorly.
+############
+
+import mlflow
+mlflow.langchain.autolog()
+
+# COMMAND ----------
+
 # DBTITLE 1,Hello World Model
 ############
 # RAG Studio requires your chain to accept an array of OpenAI-formatted messages as a `messages` parameter. Schema: https://docs.databricks.com/en/machine-learning/foundation-models/api-reference.html#chatmessage

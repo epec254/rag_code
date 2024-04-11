@@ -9,6 +9,7 @@ The software and other materials included in this repo ("Copyrighted Materials")
 We suggest following the below tutorials to get started, but you can also refer to our documentation:
 - [RAG Studio Overview Docs.pdf](<RAG Studio Overview Docs.pdf>)
 - [Evaluation Suite Doc.pdf](<Evaluation Suite Doc.pdf>)
+- [MLflow Tracing Docs.pdf](<MLflow Tracing Docs.pdf>)
 
 # Tutorials
 
@@ -17,6 +18,11 @@ We suggest following the below tutorials to get started, but you can also refer 
 ```
 %pip install --quiet "PUT_RAG_EVAL_SUITE_WHEEL_HERE"
 %pip install --quiet "PUT_RAG_STUDIO_WHEEL_HERE"
+
+%pip install opentelemetry-api opentelemetry-sdk databricks-vectorsearch tiktoken langchain langchainhub faiss-cpu -U -q
+%pip uninstall mlflow mlflow-skinny -y # uninstall existing mlflow to avoid installation issues
+%pip install "PUT_MLFLOW_WHEEL_HERE" -U
+%pip install "PUT_MLFLOW_SKINNY_WHEEL_HERE" -U
 ```
 
 *Note: While stored in the Git repo as `.py` files, these `.py` files are actually Databricks Notebooks - if you import the file using Databricks, it will render as a Notebook in the Notebook editor.  We suggest adding a Git Folder in your Databricks workspace based on a forked copy of this repo.*
