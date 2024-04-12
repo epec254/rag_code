@@ -1,4 +1,9 @@
 # Databricks notebook source
+# MAGIC %md
+# MAGIC **NOTE:** You will need to first set up a [Vector Search endpoint](https://docs.databricks.com/en/generative-ai/create-query-vector-search.html#create-a-vector-search-endpoint) and [Vector Search index](https://docs.databricks.com/en/generative-ai/create-query-vector-search.html#create-a-vector-search-index) in order to run this chain. Please see [3_load_pdf_to_vector_index]($3_load_pdf_to_vector_index) to set up this infrastucture.
+
+# COMMAND ----------
+
 # DBTITLE 1,Databricks Rag Studio Installer
 # MAGIC %run ../wheel_installer
 
