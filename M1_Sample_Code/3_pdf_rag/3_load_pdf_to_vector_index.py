@@ -19,7 +19,6 @@
 # MAGIC 1. To get started, `Run All`.  
 # MAGIC 2. You will be alerted to any configuration settings you need to config or issues you need to resolve.  
 # MAGIC 3. After you resolve an issue or set a configuration setting, press `Run All` again to verify your changes.  
-# MAGIC   *Note: Dropdown configurations will take a few seconds to load the values.*
 # MAGIC 4. Repeat until you don't get errors and press `Run All` a final time to execute the pipeline.
 
 # COMMAND ----------
@@ -79,81 +78,64 @@ if dbr_majorversion >= 14:
 
 # COMMAND ----------
 
-# DBTITLE 1,Databricks Vector Search Configuration
 # Get Vector Search Endpoints
 vector_search_endpoints_in_workspace = [item.name for item in w.vector_search_endpoints.list_endpoints() if item.endpoint_status.state == EndpointStatusState.ONLINE]
 if len(vector_search_endpoints_in_workspace) == 0:
     raise Exception("No Vector Search Endpoints are online in this workspace.  Please follow the instructions here to create a Vector Search endpoint: https://docs.databricks.com/en/generative-ai/create-query-vector-search.html#create-a-vector-search-endpoint")
 
-# Create parameter
-dbutils.widgets.dropdown(
+dbutils.widgets.text(
     "vector_search_endpoint_name",
     defaultValue="",
-    choices=vector_search_endpoints_in_workspace+[""],
-    label="#1 Select VS endpoint",
+    label="#1 VS endpoint",
 )
-
-# Set local variable for use later
 vector_search_endpoint_name = dbutils.widgets.get("vector_search_endpoint_name")
 
 # Validation
-if vector_search_endpoint_name == '' or vector_search_endpoint_name is None:
+if vector_search_endpoint_name == "" or vector_search_endpoint_name is None:
     raise Exception("Please select a Vector Search endpoint to continue.")
 else:
     print(f"Using `{vector_search_endpoint_name}` as the Vector Search endpoint.")
 
-# Get UC Catalog names
-uc_catalogs = [row.catalog for row in spark.sql("SHOW CATALOGS").collect()]
-dbutils.widgets.dropdown(
+# Get UC Catalog name
+dbutils.widgets.text(
     "uc_catalog_name",
     defaultValue="",
-    choices=uc_catalogs + [""],
-    label="#2 Select UC Catalog",
+    label="#2 UC Catalog",
 )
-
 uc_catalog_name = dbutils.widgets.get("uc_catalog_name")
 
-# Get UC Schemas within the selected catalog
+# Get UC Schema within the selected catalog
 if uc_catalog_name != "" and uc_catalog_name is not None:
     spark.sql(f"USE CATALOG `{uc_catalog_name}`")
 
-    uc_schemas = [row.databaseName for row in spark.sql(f"SHOW SCHEMAS").collect()]
-    uc_schemas = [schema for schema in uc_schemas if schema != "__databricks_internal"]
-
-    dbutils.widgets.dropdown(
+    dbutils.widgets.text(
         "uc_schema_name",
         defaultValue="",
-        choices=[""] + uc_schemas,
-        label="#3 Select UC Schema",
+        label="#3 UC Schema",
     )
 else:
-    dbutils.widgets.dropdown(
+    dbutils.widgets.text(
         "uc_schema_name",
         defaultValue="",
-        choices=[""],
-        label="#3 Select UC Schema",
+        label="#3 UC Schema",
     )
-
 uc_schema_name = dbutils.widgets.get("uc_schema_name")
 
-# Get UC Volumes within the selected catalog/schema
+# Get UC Volume within the selected catalog/schema
 if uc_schema_name != "" and uc_schema_name is not None:
     spark.sql(f"USE CATALOG `{uc_catalog_name}`")
     spark.sql(f"USE SCHEMA `{uc_schema_name}`")
-    uc_volumes = [row.volume_name for row in spark.sql(f"SHOW VOLUMES").collect()]
 
-    dbutils.widgets.dropdown(
+    dbutils.widgets.text(
         "source_uc_volume",
         defaultValue="",
-        choices=[""] + uc_volumes,
-        label="#4 Select UC Volume w/ PDFs",
+        label="#4 UC Volume w/ PDFs",
     )
 else:
-    dbutils.widgets.dropdown(
+    dbutils.widgets.text(
         "source_uc_volume",
         defaultValue="",
-        choices=[""] + uc_volumes,
-        label="#4 Select UC Volume w/ PDFs",
+        label="#4 UC Volume w/ PDFs",
     )
 
 source_uc_volume = f"/Volumes/{uc_catalog_name}/{uc_schema_name}/{dbutils.widgets.get('source_uc_volume')}"
@@ -162,12 +144,12 @@ source_uc_volume = f"/Volumes/{uc_catalog_name}/{uc_schema_name}/{dbutils.widget
 if (uc_catalog_name == "" or uc_catalog_name is None) or (
     uc_schema_name == "" or uc_schema_name is None
 ):
-    raise Exception("Please select a UC Catalog & Schema to continue.")
+    raise Exception("Please define a UC Catalog & Schema to continue.")
 else:
     print(f"Using `{uc_catalog_name}.{uc_schema_name}` as the UC Catalog / Schema.")
 
 if source_uc_volume == "" or source_uc_volume is None:
-    raise Exception("Please select a source UC Volume w/ PDF files to continue.")
+    raise Exception("Please define a source UC Volume w/ PDF files to continue.")
 else:
     print(
         f"Using {source_uc_volume} as the UC Volume Source."
@@ -266,7 +248,7 @@ else:
 
 # COMMAND ----------
 
-# If you want to run this pipeline as a Job, remove the above 2 cells which implement the dropdown functionality.  Uncomment this code.
+# If you want to run this pipeline as a Job, remove the above 2 cells and uncomment this code.
 
 # # Defaults
 # BGE_CONTEXT_WINDOW_LENGTH_TOKENS = 512
