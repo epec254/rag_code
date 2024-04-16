@@ -100,8 +100,33 @@ METRIC_NAMES = [
     "retrieval_metrics.llm_judged_precision_at_5",
     "retrieval_metrics.llm_judged_precision_at_10",
 ]
+NAME_MAP = {
+    "response_metrics.token_count": "response_metrics/token_count",
+    "response_metrics.exact_match": "response_metrics/exact_match",
+    "response_metrics.llm_judged_harmful": "response_metrics/llm_judged/harmful",
+    "response_metrics.llm_judged_faithful_to_context": "response_metrics/llm_judged/faithful_to_context",
+    "response_metrics.llm_judged_relevant_to_question_and_context": "response_metrics/llm_judged/relevant_to_question_and_context",
+    "response_metrics.llm_judged_relevant_to_question": "response_metrics/llm_judged/relevant_to_question",
+    "response_metrics.llm_judged_answer_good": "response_metrics/llm_judged/answer_correct",
+    "retrieval_metrics.ground_truth_precision_at_1": "retrieval_metrics/ground_truth/k_1/precision",
+    "retrieval_metrics.ground_truth_recall_at_1": "retrieval_metrics/ground_truth/k_1/recall",
+    "retrieval_metrics.ground_truth_ndcg_at_1": "retrieval_metrics/ground_truth/k_1/ndcg",
+    "retrieval_metrics.ground_truth_precision_at_3": "retrieval_metrics/ground_truth/k_3/precision",
+    "retrieval_metrics.ground_truth_recall_at_3": "retrieval_metrics/ground_truth/k_3/recall",
+    "retrieval_metrics.ground_truth_ndcg_at_3": "retrieval_metrics/ground_truth/k_3/ndcg",
+    "retrieval_metrics.ground_truth_precision_at_5": "retrieval_metrics/ground_truth/k_5/precision",
+    "retrieval_metrics.ground_truth_recall_at_5": "retrieval_metrics/ground_truth/k_5/recall",
+    "retrieval_metrics.ground_truth_ndcg_at_5": "retrieval_metrics/ground_truth/k_5/ndcg",
+    "retrieval_metrics.ground_truth_precision_at_10": "retrieval_metrics/ground_truth/k_10/precision",
+    "retrieval_metrics.ground_truth_recall_at_10": "retrieval_metrics/ground_truth/k_10/recall",
+    "retrieval_metrics.ground_truth_ndcg_at_10": "retrieval_metrics/ground_truth/k_10/ndcg",
+    "retrieval_metrics.llm_judged_precision_at_1": "retrieval_metrics/llm_judged/k_1/precision",
+    "retrieval_metrics.llm_judged_precision_at_3": "retrieval_metrics/llm_judged/k_1/precision",
+    "retrieval_metrics.llm_judged_precision_at_5": "retrieval_metrics/llm_judged/k_1/precision",
+    "retrieval_metrics.llm_judged_precision_at_10": "retrieval_metrics/llm_judged/k_1/precision",
+}
 METRIC_SQL_COMPUTATION_TEMPLATE = (
-    "avg(cast({metric_type}.{metric_name} as float)) as {metric_name}"
+    "avg(coalesce(cast({metric_type}.{metric_name} as float), 0)) as `{metric_new_name}`"
 )
 METRIC_SELECT_TEMPLATE = """SELECT
   mlflow_run_url,
@@ -119,7 +144,7 @@ def experimental_add_metrics_to_run(eval_results, run_id=None):
         run_id = eval_results.mlflow_run_id
     metric_sqls = [
         METRIC_SQL_COMPUTATION_TEMPLATE.format(
-            metric_type=metric.split(".")[0], metric_name=metric.split(".")[1]
+            metric_type=metric.split(".")[0], metric_name=metric.split(".")[1], metric_new_name=NAME_MAP[metric]
         )
         for metric in METRIC_NAMES
     ]
