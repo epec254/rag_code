@@ -78,82 +78,117 @@ if dbr_majorversion >= 14:
 
 # COMMAND ----------
 
-# Get Vector Search Endpoints
 vector_search_endpoints_in_workspace = [item.name for item in w.vector_search_endpoints.list_endpoints() if item.endpoint_status.state == EndpointStatusState.ONLINE]
+
 if len(vector_search_endpoints_in_workspace) == 0:
     raise Exception("No Vector Search Endpoints are online in this workspace.  Please follow the instructions here to create a Vector Search endpoint: https://docs.databricks.com/en/generative-ai/create-query-vector-search.html#create-a-vector-search-endpoint")
 
-dbutils.widgets.text(
-    "vector_search_endpoint_name",
-    defaultValue="",
-    label="#1 VS endpoint",
-)
+# Vector Search Endpoint Widget
+if len(vector_search_endpoints_in_workspace) > 1024:  # use text widget if number of values > 1024
+    dbutils.widgets.text(
+        "vector_search_endpoint_name",
+        defaultValue="",
+        label="#1 VS endpoint",
+    )
+else:
+    dbutils.widgets.dropdown(
+        "vector_search_endpoint_name",
+        defaultValue="",
+        choices=vector_search_endpoints_in_workspace+[""],
+        label="#1 Select VS endpoint",
+    )
 vector_search_endpoint_name = dbutils.widgets.get("vector_search_endpoint_name")
 
-# Validation
-if vector_search_endpoint_name == "" or vector_search_endpoint_name is None:
+if vector_search_endpoint_name == '' or vector_search_endpoint_name is None:
     raise Exception("Please select a Vector Search endpoint to continue.")
 else:
     print(f"Using `{vector_search_endpoint_name}` as the Vector Search endpoint.")
 
-# Get UC Catalog name
-dbutils.widgets.text(
-    "uc_catalog_name",
-    defaultValue="",
-    label="#2 UC Catalog",
-)
-uc_catalog_name = dbutils.widgets.get("uc_catalog_name")
+# UC Catalog widget
+uc_catalogs = [row.catalog for row in spark.sql("SHOW CATALOGS").collect()]
 
-# Get UC Schema within the selected catalog
-if uc_catalog_name != "" and uc_catalog_name is not None:
-    spark.sql(f"USE CATALOG `{uc_catalog_name}`")
-
+if len(uc_catalogs) > 1024:  # use text widget if number of values > 1024
     dbutils.widgets.text(
-        "uc_schema_name",
+        "uc_catalog_name",
         defaultValue="",
-        label="#3 UC Schema",
+        label="#2 UC Catalog",
     )
 else:
-    dbutils.widgets.text(
+    dbutils.widgets.dropdown(
+        "uc_catalog_name",
+        defaultValue="",
+        choices=uc_catalogs + [""],
+        label="#2 Select UC Catalog",
+    )
+uc_catalog_name = dbutils.widgets.get("uc_catalog_name")
+
+# UC Schema widget (Schema within the defined Catalog)
+if uc_catalog_name != "" and uc_catalog_name is not None:
+    spark.sql(f"USE CATALOG `{uc_catalog_name}`")
+    uc_schemas = [row.databaseName for row in spark.sql(f"SHOW SCHEMAS").collect()]
+    uc_schemas = [schema for schema in uc_schemas if schema != "__databricks_internal"]
+
+    if len(uc_schemas) > 1024: # use text widget if number of values > 1024
+        dbutils.widgets.text(
+            "uc_schema_name",
+            defaultValue="",
+            label="#3 UC Schema",
+        )
+    else:
+        dbutils.widgets.dropdown(
+            "uc_schema_name",
+            defaultValue="",
+            choices=[""] + uc_schemas,
+            label="#3 Select UC Schema",
+        )
+else:
+    dbutils.widgets.dropdown(
         "uc_schema_name",
         defaultValue="",
-        label="#3 UC Schema",
+        choices=[""],
+        label="#3 Select UC Schema",
     )
 uc_schema_name = dbutils.widgets.get("uc_schema_name")
 
-# Get UC Volume within the selected catalog/schema
+# UC Volume widget (Volume within the defined Schema)
 if uc_schema_name != "" and uc_schema_name is not None:
     spark.sql(f"USE CATALOG `{uc_catalog_name}`")
     spark.sql(f"USE SCHEMA `{uc_schema_name}`")
+    uc_volumes = [row.volume_name for row in spark.sql(f"SHOW VOLUMES").collect()]
 
-    dbutils.widgets.text(
-        "source_uc_volume",
-        defaultValue="",
-        label="#4 UC Volume w/ PDFs",
-    )
+    if len(uc_volumes) > 1024:
+        dbutils.widgets.text(
+            "source_uc_volume",
+            defaultValue="",
+            label="#4 UC Volume w/ PDFs",
+        )
+    else:
+        dbutils.widgets.dropdown(
+            "source_uc_volume",
+            defaultValue="",
+            choices=[""] + uc_volumes,
+            label="#4 Select UC Volume w/ PDFs",
+        )
 else:
-    dbutils.widgets.text(
+    dbutils.widgets.dropdown(
         "source_uc_volume",
         defaultValue="",
-        label="#4 UC Volume w/ PDFs",
+        choices=[""],
+        label="#4 Select UC Volume w/ PDFs",
     )
 
 source_uc_volume = f"/Volumes/{uc_catalog_name}/{uc_schema_name}/{dbutils.widgets.get('source_uc_volume')}"
 
 # Validation
-if (uc_catalog_name == "" or uc_catalog_name is None) or (
-    uc_schema_name == "" or uc_schema_name is None
-):
-    raise Exception("Please define a UC Catalog & Schema to continue.")
+if (uc_catalog_name == "" or uc_catalog_name is None) or (uc_schema_name == "" or uc_schema_name is None):
+    raise Exception("Please select a UC Catalog & Schema to continue.")
 else:
     print(f"Using `{uc_catalog_name}.{uc_schema_name}` as the UC Catalog / Schema.")
 
 if source_uc_volume == "" or source_uc_volume is None:
-    raise Exception("Please define a source UC Volume w/ PDF files to continue.")
+    raise Exception("Please select a source UC Volume w/ PDF files to continue.")
 else:
-    print(
-        f"Using {source_uc_volume} as the UC Volume Source."
-    )
+    print(f"Using {source_uc_volume} as the UC Volume Source.")
 
 # COMMAND ----------
 
