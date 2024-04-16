@@ -65,6 +65,10 @@ dbutils.library.restartPython()
 
 # COMMAND ----------
 
+# MAGIC %run ./RAG_Experimental_Code
+
+# COMMAND ----------
+
 # DBTITLE 1,Import Evaluation Suite
 from databricks import rag_eval
 import yaml
@@ -263,6 +267,15 @@ eval_results = rag_eval.evaluate(
     config=config_yml
 )
 
+############
+# Experimental: Log evaluation results to MLflow.  Note you can also use the dashboard produced by RAG Studio to view metrics/debug quality - it has more advanced functionality.
+# Known issues: Can only be run once per run_id.
+# ⚠️⚠️ 🐛🐛 Experimental features likely have bugs! 🐛🐛 ⚠️⚠️
+############
+experimental_add_metrics_to_run(eval_results, eval_results.mlflow_run_id)
+experimental_add_eval_outputs_to_run(eval_results, eval_results.mlflow_run_id)
+experimental_add_eval_config_tags_to_run(eval_results, config_yml, eval_results.mlflow_run_id)
+
 # COMMAND ----------
 
 # MAGIC %md
@@ -352,6 +365,15 @@ eval_results = rag_eval.evaluate(
     answer_sheet_table_name=spark_bot_v2_answer_sheet_table,
     config=config_yml
 )
+
+############
+# Experimental: Log evaluation results to MLflow.  Note you can also use the dashboard produced by RAG Studio to view metrics/debug quality - it has more advanced functionality.
+# Known issues: Can only be run once per run_id.
+# ⚠️⚠️ 🐛🐛 Experimental features likely have bugs! 🐛🐛 ⚠️⚠️
+############
+experimental_add_metrics_to_run(eval_results, eval_results.mlflow_run_id)
+experimental_add_eval_outputs_to_run(eval_results, eval_results.mlflow_run_id)
+experimental_add_eval_config_tags_to_run(eval_results, config_yml, eval_results.mlflow_run_id)
 
 # COMMAND ----------
 
@@ -456,3 +478,12 @@ eval_results = rag_eval.evaluate(
     answer_sheet_table_name=spark_bot_v2_answer_sheet_table,
     config=config_custom_judge_yml
 )
+
+############
+# Experimental: Log evaluation results to MLflow.  Note you can also use the dashboard produced by RAG Studio to view metrics/debug quality - it has more advanced functionality.
+# Known issues: Can only be run once per run_id.
+# ⚠️⚠️ 🐛🐛 Experimental features likely have bugs! 🐛🐛 ⚠️⚠️
+############
+experimental_add_metrics_to_run(eval_results, eval_results.mlflow_run_id)
+experimental_add_eval_outputs_to_run(eval_results, eval_results.mlflow_run_id)
+experimental_add_eval_config_tags_to_run(eval_results, config_yml, eval_results.mlflow_run_id)

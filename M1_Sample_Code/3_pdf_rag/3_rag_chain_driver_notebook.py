@@ -376,14 +376,17 @@ print(config_yml)
 with mlflow.start_run(logged_chain_info.run_id):
   evaluation_results = rag_eval.evaluate(eval_set_table_name=eval_table_fqdn, model_uri=logged_chain_info.model_uri, config=config_yml)
 
-  ############
-  # Experimental: Log evaluation results to MLflow.  Note you can also use the dashboard produced by RAG Studio to view metrics/debug quality - it has more advanced functionality.
-  # Known issues: Can only be run once per run_id.
-  # ⚠️⚠️ 🐛🐛 Experimental features likely have bugs! 🐛🐛 ⚠️⚠️
-  ############
-  experimental_add_metrics_to_run(evaluation_results, evaluation_results.mlflow_run_id)
-  experimental_add_eval_outputs_to_run(evaluation_results, evaluation_results.mlflow_run_id)
-  experimental_add_eval_config_tags_to_run(evaluation_results, config_yml, evaluation_results.mlflow_run_id)
+############
+# Experimental: Log evaluation results to MLflow.  Note you can also use the dashboard produced by RAG Studio to view metrics/debug quality - it has more advanced functionality.
+# Known issues: Can only be run once per run_id.
+# ⚠️⚠️ 🐛🐛 Experimental features likely have bugs! 🐛🐛 ⚠️⚠️
+############
+experimental_add_metrics_to_run(evaluation_results, evaluation_results.mlflow_run_id)
+experimental_add_eval_outputs_to_run(evaluation_results, evaluation_results.mlflow_run_id)
+experimental_add_eval_config_tags_to_run(evaluation_results, config_yml, evaluation_results.mlflow_run_id)
+# Note: If you change the config after you log the model, but before you run this command, the incorrect config will be logged.
+RagConfig(chain_config_path).experimental_log_to_mlflow_run(run_id=evaluation_results.mlflow_run_id)
+
 
 # COMMAND ----------
 
