@@ -34,6 +34,10 @@ dbutils.library.restartPython()
 
 # COMMAND ----------
 
+# MAGIC %run ../RAG_Experimental_Code
+
+# COMMAND ----------
+
 import json
 import os
 
@@ -63,10 +67,6 @@ def parse_deployment_info(deployment_info):
   Review App: {deployment_info.rag_app_url}"""
   return message
 ### END: Ignore this code, temporary workarounds given the Private Preview state of the product
-
-# COMMAND ----------
-
-# MAGIC %run ../RAG_Experimental_Code
 
 # COMMAND ----------
 

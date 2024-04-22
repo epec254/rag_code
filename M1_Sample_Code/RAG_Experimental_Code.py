@@ -9,7 +9,7 @@
 # COMMAND ----------
 
 # DBTITLE 1,Get Trace from Chain
-from databricks.rag.scoring import predictions as rag
+from databricks.rag.scoring import predictions
 from databricks import rag_eval
 
 def _convert_trace_buffer_to_trace_object(trace_buffer):
@@ -23,15 +23,15 @@ def _convert_trace_buffer_to_trace_object(trace_buffer):
     else:
         start_timestamp = trace_buffer[0].start_timestamp
         end_timestamp = trace_buffer[-1].end_timestamp
-    return rag.Trace(
+    return predictions.Trace(
         steps=trace_buffer,
         start_timestamp=start_timestamp,
         end_timestamp=end_timestamp,
     )
 
 def experimental_get_json_trace(langchain_model, model_input):
-  handler = rag.DatabricksChainCallback()
-  langchain_wrapped_model = rag._LangChainModelWrapper(langchain_model)
+  handler = predictions.DatabricksChainCallback()
+  langchain_wrapped_model = predictions._LangChainModelWrapper(langchain_model)
   # noinspection PyTypeChecker
   model_output: dict = langchain_wrapped_model._predict_with_callbacks(
       model_input, callback_handlers=[handler], convert_chat_responses=True
