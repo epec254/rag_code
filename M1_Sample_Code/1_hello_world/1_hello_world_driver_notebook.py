@@ -35,17 +35,11 @@ dbutils.library.restartPython()
 
 # DBTITLE 1,Imports
 import os
-
 import mlflow
 from databricks import rag_studio
 
+# Use the Unity Catalog model registry
 mlflow.set_registry_uri('databricks-uc')
-
-############
-# Private Preview Feature MLflow Tracing
-# RAG Studio depends on MLflow to show a trace of your chain. The trace can help you easily debug your chain and keep track of inputs & responses your chain performs well or performs poorly.
-############
-mlflow.langchain.autolog()
 
 ### START: Ignore this code, temporary workarounds given the Private Preview state of the product
 from mlflow.utils import databricks_utils as du
@@ -63,11 +57,49 @@ def parse_deployment_info(deployment_info):
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC ## Select the Unity Catalog to log the chain
+
+# COMMAND ----------
+
+# Create widgets for user input
+dbutils.widgets.text("uc_catalog", "catalog", "Unity Catalog")
+dbutils.widgets.text("uc_schema", "schema", "Unity Catalog Schema")
+dbutils.widgets.text("model_name", "hello_world", "Model Name")
+
+# Retrieve the values from the widgets
+uc_catalog = dbutils.widgets.get("uc_catalog")
+uc_schema = dbutils.widgets.get("uc_schema")
+model_name = dbutils.widgets.get("model_name")
+
+# COMMAND ----------
+
+# MAGIC %md
 # MAGIC ## Define paths for chain notebook
 
 # COMMAND ----------
 
 # DBTITLE 1,Setup
+
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Log the chain to MLflow
+# MAGIC
+# MAGIC Log the chain to the Notebook's MLflow Experiment inside a Run. The model is logged to the Notebook's MLflow Experiment as a run.
+
+# COMMAND ----------
+
+# Provide an example of the input schema that is used to set the MLflow model's signature
+input_example = {
+   "messages": [
+       {
+           "role": "user",
+           "content": "What is Retrieval-augmented Generation?",
+       }
+   ]
+}
+
 # Specify the full path to the chain notebook
 chain_notebook_file = "1_hello_world_chain"
 chain_notebook_path = os.path.join(os.getcwd(), chain_notebook_file)
@@ -76,52 +108,19 @@ print(f"Chain notebook path: {chain_notebook_path}")
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC ## Log the chain to MLflow and test locally
-# MAGIC
-# MAGIC Log the chain to the Notebook's MLflow Experiment inside a Run. The model is logged to the Notebook's MLflow Experiment as a run.
-# MAGIC
-
-# COMMAND ----------
-
-# DBTITLE 1,Log the model
-logged_chain_info = rag_studio.log_model(code_path=chain_notebook_path)
-
-print(f"MLflow Run: {logged_chain_info.run_id}")
-print(f"Model URI: {logged_chain_info.model_uri}")
-
-############
-# If you see this error, go to your chain code and comment out all usage of `dbutils`
-############
-# ValueError: The file specified by 'code_path' uses 'dbutils' command which are not supported in a chain model. To ensure your code functions correctly, remove or comment out usage of 'dbutils' command.
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC You can test the model locally. This is the same input that the REST API will accept once deployed.
-
-# COMMAND ----------
-
-# DBTITLE 1,Run the logged model locally
-example_input = {
-    "messages": [
-        {
-            "role": "user",
-            "content": "Hello world!!",
-        },
-        {
-            "role": "assistant",
-            "content": "Hello back.",
-        },
-        {
-            "role": "user",
-            "content": "Hello again.",
-        }
-    ]
-}
-
-model = mlflow.langchain.load_model(logged_chain_info.model_uri)
-model.invoke(example_input)
+with mlflow.start_run():
+    model_info = mlflow.langchain.log_model(
+        lc_model=chain_notebook_path,
+        artifact_path="chain",
+        input_example=input_example,
+        example_no_conversion=True, # required to allow the schema to work
+        # TEMPORARY CODE UNTIL WHEEL IS PUBLISHED
+        pip_requirements=[
+            "mlflow>=2.12.0",
+            "git+https://github.com/mlflow/mlflow.git@master",
+            "databricks_rag_studio==0.1.0",
+        ],
+    )
 
 # COMMAND ----------
 
@@ -143,13 +142,8 @@ model.invoke(example_input)
 
 # COMMAND ----------
 
-# TODO: Change these values to your catalog and schema
-uc_catalog = "catalog"
-uc_schema = "schema"
-model_name = "hello_world"
-uc_model_fqdn = f"{uc_catalog}.{uc_schema}.{model_name}" 
-
-uc_registered_chain_info = mlflow.register_model(logged_chain_info.model_uri, uc_model_fqdn)
+# Register the model to the Unity Catalog
+uc_registered_model_info = mlflow.register_model(model_uri=model_info.model_uri, name=f"{uc_catalog}.{uc_schema}.{model_name}" )
 
 # COMMAND ----------
 

@@ -9,28 +9,35 @@ dbutils.library.restartPython()
 
 # COMMAND ----------
 
+import mlflow
 from operator import itemgetter
-
-from databricks.rag import set_chain
-
 from langchain_core.output_parsers import StrOutputParser
 from langchain.schema.runnable import RunnableLambda
 
 # COMMAND ----------
 
-############
-# Private Preview Feature MLflow Tracing
-# RAG Studio dependes on MLflow to show a trace of your chain. The trace can help you easily debug your chain and keep track of inputs & responses your chain performs well or performs poorly.
-############
+# MAGIC %md
+# MAGIC ## Enable MLflow Tracing
+# MAGIC
+# MAGIC Enabling MLflow Tracing is required to:
+# MAGIC - View the chain's trace visualization in this notebook
+# MAGIC - Capture the chain's trace in production via Inference Tables
+# MAGIC - Evaluate the chain via the Mosaic AI Evaluation Suite
 
-import mlflow
+# COMMAND ----------
+
 mlflow.langchain.autolog()
 
 # COMMAND ----------
 
-# DBTITLE 1,Hello World Model
+# MAGIC %md
+# MAGIC ## Chain helper functions
+
+# COMMAND ----------
+
 ############
-# RAG Studio requires your chain to accept an array of OpenAI-formatted messages as a `messages` parameter. Schema: https://docs.databricks.com/en/machine-learning/foundation-models/api-reference.html#chatmessage
+# Your chain must accept an array of OpenAI-formatted messages as a `messages` parameter. 
+# Schema: https://docs.databricks.com/en/machine-learning/foundation-models/api-reference.html#chatmessage
 # These helper functions help parse the `messages` array
 ############
 
@@ -43,7 +50,14 @@ def extract_user_query_string(chat_messages_array):
 def extract_chat_history(chat_messages_array):
     return chat_messages_array[:-1]
 
+# COMMAND ----------
 
+# MAGIC %md
+# MAGIC ## Hello World chain
+
+# COMMAND ----------
+
+# DBTITLE 1,Hello World Chain
 ############
 # Fake model for this hello world example.
 ############
@@ -52,7 +66,7 @@ def fake_model(input):
 
 
 ############
-# Simplest chain example
+# Simple chain 
 ############
 # RAG Studio requires the chain to return a string value.
 chain = (
@@ -65,9 +79,15 @@ chain = (
     | StrOutputParser()
 )
 
-############
-# You can test this chain locally in the notebook
-############
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Test the chain locally
+
+# COMMAND ----------
+
+# This is the same input your chain's REST API will accept.
 question = {
     "messages": [
         {
@@ -89,5 +109,11 @@ chain.invoke(question)
 
 # COMMAND ----------
 
-# You need to call `set_chain` in order for RAG Studio to log your chain.
-set_chain(chain)
+# MAGIC %md
+# MAGIC ## Tell MLflow logging where to find your chain.
+# MAGIC
+# MAGIC `mlflow.models.set_model(model=...)` function specifies the LangChain chain to use for evaluation and deployment.  This is required to log this chain to MLflow with `mlflow.langchain.log_model(...)`.
+
+# COMMAND ----------
+
+mlflow.models.set_model(model=chain)
