@@ -57,7 +57,7 @@ def parse_deployment_info(deployment_info):
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## Select the Unity Catalog to log the chain
+# MAGIC ## Select the Unity Catalog location where the chain will be logged
 
 # COMMAND ----------
 
@@ -74,19 +74,14 @@ model_name = dbutils.widgets.get("model_name")
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## Define paths for chain notebook
-
-# COMMAND ----------
-
-# DBTITLE 1,Setup
-
+# MAGIC ## Log the chain to MLflow
+# MAGIC
+# MAGIC Log the chain to the Notebook's MLflow Experiment inside a Run. The model is logged to the Notebook's MLflow Experiment as a run.
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## Log the chain to MLflow
-# MAGIC
-# MAGIC Log the chain to the Notebook's MLflow Experiment inside a Run. The model is logged to the Notebook's MLflow Experiment as a run.
+# MAGIC ### MLflow logging input parameters
 
 # COMMAND ----------
 
@@ -108,8 +103,13 @@ print(f"Chain notebook path: {chain_notebook_path}")
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ### Log the chain
+
+# COMMAND ----------
+
 with mlflow.start_run():
-    model_info = mlflow.langchain.log_model(
+    logged_chain_info = mlflow.langchain.log_model(
         lc_model=chain_notebook_path,
         artifact_path="chain",
         input_example=input_example,
@@ -142,8 +142,11 @@ with mlflow.start_run():
 
 # COMMAND ----------
 
+# Unity Catalog location
+uc_model_fqn = f"{uc_catalog}.{uc_schema}.{model_name}"
+
 # Register the model to the Unity Catalog
-uc_registered_model_info = mlflow.register_model(model_uri=model_info.model_uri, name=f"{uc_catalog}.{uc_schema}.{model_name}" )
+uc_registered_model_info = mlflow.register_model(model_uri=logged_chain_info.model_uri, name=uc_model_fqn )
 
 # COMMAND ----------
 
@@ -159,7 +162,7 @@ uc_registered_model_info = mlflow.register_model(model_uri=model_info.model_uri,
 # COMMAND ----------
 
 # DBTITLE 1,Deploy the model
-deployment_info = rag_studio.deploy_model(uc_model_fqdn, uc_registered_chain_info.version)
+deployment_info = rag_studio.deploy_model(uc_model_fqn, uc_registered_chain_info.version)
 print(parse_deployment_info(deployment_info))
 
 # Note: It can take up to 15 minutes to deploy - we are working to reduce this time to seconds.
