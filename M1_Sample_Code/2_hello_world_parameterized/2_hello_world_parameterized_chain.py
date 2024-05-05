@@ -5,32 +5,39 @@
 # COMMAND ----------
 
 # Before logging this chain using the driver notebook, you need to comment out this line.
-dbutils.library.restartPython() 
+# dbutils.library.restartPython() 
 
 # COMMAND ----------
 
+import mlflow
 from operator import itemgetter
-
-from databricks import rag 
-
 from langchain_core.output_parsers import StrOutputParser
 from langchain.schema.runnable import RunnableLambda
 
 # COMMAND ----------
 
-############
-# Private Preview Feature MLflow Tracing
-# RAG Studio dependes on MLflow to show a trace of your chain. The trace can help you easily debug your chain and keep track of inputs & responses your chain performs well or performs poorly.
-############
+# MAGIC %md
+# MAGIC ## Enable MLflow Tracing
+# MAGIC
+# MAGIC Enabling MLflow Tracing is required to:
+# MAGIC - View the chain's trace visualization in this notebook
+# MAGIC - Capture the chain's trace in production via Inference Tables
+# MAGIC - Evaluate the chain via the Mosaic AI Evaluation Suite
 
-import mlflow
+# COMMAND ----------
+
 mlflow.langchain.autolog()
 
 # COMMAND ----------
 
-# DBTITLE 1,Hello World Model
+# MAGIC %md
+# MAGIC ## Chain helper functions
+
+# COMMAND ----------
+
 ############
-# RAG Studio requires your chain to accept an array of OpenAI-formatted messages as a `messages` parameter. Schema: https://docs.databricks.com/en/machine-learning/foundation-models/api-reference.html#chatmessage
+# Your chain must accept an array of OpenAI-formatted messages as a `messages` parameter. 
+# Schema: https://docs.databricks.com/en/machine-learning/foundation-models/api-reference.html#chatmessage
 # These helper functions help parse the `messages` array
 ############
 
@@ -43,21 +50,41 @@ def extract_user_query_string(chat_messages_array):
 def extract_chat_history(chat_messages_array):
     return chat_messages_array[:-1]
 
+# COMMAND ----------
 
-############
-# Get the configuration YAML
-############
-rag_config = rag.RagConfig("configs/2_hello_world_config.yaml")
+# MAGIC %md
+# MAGIC ## Parameterized Hello World chain
 
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Define the parameters 
+
+# COMMAND ----------
+
+# You can use any key:value pairs as parameters.
+# The parameters can be loaded from a dict or from a YAML file
+# When logging your model, this configuration can be overridden to experiment with different settings to improve quality
+
+config_dict = {"sample_param": "this is the sample parameter that can be changed! this could be a prompt, a retrieval setting, or ..."}
+model_config = mlflow.models.ModelConfig(development_config=config_dict)
+
+# Example for loading from a YAML
+# config_file = "configs/2_hello_world_config.yaml"
+# model_config = mlflow.models.ModelConfig(development_config=config_file)
+
+# COMMAND ----------
+
+# DBTITLE 1,Hello World Model
 ############
 # Fake model for this hello world example.
 ############
 def fake_model(input):
-    return f"Config: {rag_config.get('sample_param')}.  You asked `{input.get('user_query')}`. Conversation history: {input.get('chat_history')}"
+    return f"Config: {model_config.get('sample_param')}.  You asked `{input.get('user_query')}`. Conversation history: {input.get('chat_history')}"
 
 
 ############
-# Simplest chain example
+# Parameterized chain example
 ############
 # RAG Studio requires the chain to return a string value.
 chain = (
@@ -70,9 +97,15 @@ chain = (
     | StrOutputParser()
 )
 
-############
-# You can test this chain locally in the notebook
-############
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Test the chain locally
+
+# COMMAND ----------
+
+# This is the same input your chain's REST API will accept.
 question = {
     "messages": [
         {
@@ -94,5 +127,11 @@ chain.invoke(question)
 
 # COMMAND ----------
 
-# You need to call `set_chain` in order for RAG Studio to log your chain.
-rag.set_chain(chain)
+# MAGIC %md
+# MAGIC ## Tell MLflow logging where to find your chain.
+# MAGIC
+# MAGIC `mlflow.models.set_model(model=...)` function specifies the LangChain chain to use for evaluation and deployment.  This is required to log this chain to MLflow with `mlflow.langchain.log_model(...)`.
+
+# COMMAND ----------
+
+mlflow.models.set_model(model=chain)
