@@ -29,6 +29,10 @@ dbutils.library.restartPython()
 
 # COMMAND ----------
 
+# MAGIC %run ../prpr_shared_funcs
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ## Imports
 
@@ -37,7 +41,7 @@ dbutils.library.restartPython()
 import os
 import mlflow
 from databricks import rag_studio
-
+import pandas as pd
 # Use Unity Catalog as the model registry
 mlflow.set_registry_uri('databricks-uc')
 

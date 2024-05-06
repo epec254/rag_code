@@ -28,6 +28,10 @@ dbutils.library.restartPython()
 
 # COMMAND ----------
 
+# MAGIC %run ../prpr_shared_funcs
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ## Imports
 
