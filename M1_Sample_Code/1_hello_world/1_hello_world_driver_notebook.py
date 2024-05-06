@@ -41,19 +41,6 @@ from databricks import rag_studio
 # Use the Unity Catalog model registry
 mlflow.set_registry_uri('databricks-uc')
 
-### START: Ignore this code, temporary workarounds given the Private Preview state of the product
-from mlflow.utils import databricks_utils as du
-os.environ['MLFLOW_ENABLE_ARTIFACTS_PROGRESS_BAR'] = "false"
-
-def parse_deployment_info(deployment_info):
-  browser_url = du.get_browser_hostname()
-  message = f"""Deployment of {deployment_info.model_name} version {deployment_info.model_version} initiated.  This can take up to 15 minutes and the Review App & REST API will not work until this deployment finishes. 
-
-  View status: https://{browser_url}/ml/endpoints/{deployment_info.endpoint_name}
-  Review App: {deployment_info.rag_app_url}"""
-  return message
-### END: Ignore this code, temporary workarounds given the Private Preview state of the product
-
 # COMMAND ----------
 
 # MAGIC %md
@@ -162,7 +149,7 @@ uc_registered_model_info = mlflow.register_model(model_uri=logged_chain_info.mod
 # COMMAND ----------
 
 # DBTITLE 1,Deploy the model
-deployment_info = rag_studio.deploy_model(uc_model_fqn, uc_registered_chain_info.version)
+deployment_info = rag_studio.deploy_model(uc_model_fqn, uc_registered_model_info.version)
 print(parse_deployment_info(deployment_info))
 
 # Note: It can take up to 15 minutes to deploy - we are working to reduce this time to seconds.
