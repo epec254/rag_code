@@ -14,13 +14,14 @@
 # COMMAND ----------
 
 # Before logging this chain using the driver notebook, you need to comment out this line.
-dbutils.library.restartPython() 
+# dbutils.library.restartPython() 
 
 # COMMAND ----------
 
 # DBTITLE 1,Import packages
 from operator import itemgetter
-
+import mlflow
+import os
 from databricks import rag
 from databricks.vector_search.client import VectorSearchClient
 from langchain.schema.runnable import RunnableLambda
@@ -32,13 +33,22 @@ from langchain_core.runnables import RunnablePassthrough
 
 # COMMAND ----------
 
-############
-# Private Preview Feature MLflow Tracing
-# RAG Studio dependes on MLflow to show a trace of your chain. The trace can help you easily debug your chain and keep track of inputs & responses your chain performs well or performs poorly.
-############
+# MAGIC %md
+# MAGIC ## Enable MLflow Tracing
+# MAGIC
+# MAGIC Enabling MLflow Tracing is required to:
+# MAGIC - View the chain's trace visualization in this notebook
+# MAGIC - Capture the chain's trace in production via Inference Tables
+# MAGIC - Evaluate the chain via the Mosaic AI Evaluation Suite
 
-import mlflow
+# COMMAND ----------
+
 mlflow.langchain.autolog()
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Chain helper functions
 
 # COMMAND ----------
 
@@ -55,22 +65,23 @@ def extract_user_query_string(chat_messages_array):
 def extract_chat_history(chat_messages_array):
     return chat_messages_array[:-1]
 
+# COMMAND ----------
+
 
 ############
 # Get the configuration YAML
 ############
-rag_config = rag.RagConfig("3_rag_chain_config.yaml")
-
+model_config = mlflow.models.ModelConfig(development_config="2_rag_chain_config.yaml")
 
 ############
 # Connect to the Vector Search Index
 ############
 vs_client = VectorSearchClient(disable_notice=True)
 vs_index = vs_client.get_index(
-    endpoint_name=rag_config.get("vector_search_endpoint_name"),
-    index_name=rag_config.get("vector_search_index"),
+    endpoint_name=model_config.get("vector_search_endpoint_name"),
+    index_name=model_config.get("vector_search_index"),
 )
-vector_search_schema = rag_config.get("vector_search_schema")
+vector_search_schema = model_config.get("vector_search_schema")
 
 ############
 # Turn the Vector Search index into a LangChain retriever
@@ -83,7 +94,7 @@ vector_search_as_retriever = DatabricksVectorSearch(
         vector_search_schema.get("chunk_text"),
         vector_search_schema.get("document_source"),
     ],
-).as_retriever(search_kwargs=rag_config.get("vector_search_parameters"))
+).as_retriever(search_kwargs=model_config.get("vector_search_parameters"))
 
 ############
 # Required to:
@@ -102,7 +113,7 @@ rag.set_vector_search_schema(
 # Method to format the docs returned by the retriever into the prompt
 ############
 def format_context(docs):
-    chunk_template = rag_config.get("chunk_template")
+    chunk_template = model_config.get("chunk_template")
     chunk_contents = [chunk_template.format(chunk_text=d.page_content) for d in docs]
     return "".join(chunk_contents)
 
@@ -111,16 +122,16 @@ def format_context(docs):
 # Prompt Template for generation
 ############
 prompt = PromptTemplate(
-    template=rag_config.get("chat_prompt_template"),
-    input_variables=rag_config.get("chat_prompt_template_variables"),
+    template=model_config.get("chat_prompt_template"),
+    input_variables=model_config.get("chat_prompt_template_variables"),
 )
 
 ############
 # FM for generation
 ############
 model = ChatDatabricks(
-    endpoint=rag_config.get("chat_endpoint"),
-    extra_params=rag_config.get("chat_endpoint_parameters"),
+    endpoint=model_config.get("chat_endpoint"),
+    extra_params=model_config.get("chat_endpoint_parameters"),
 )
 
 ############
@@ -139,6 +150,9 @@ chain = (
     | StrOutputParser()
 )
 
+
+# COMMAND ----------
+
 ############
 # Test the Chain
 ############
@@ -146,13 +160,21 @@ model_input_sample = {
     "messages": [
         {
             "role": "user",
-            "content": "What is ARES?",
+            "content": "What is DSPY?",
         }
     ]
 }
-print(chain.invoke(model_input_sample))
 
-############
-# Tell RAG Studio about the chain - required for logging, but not local testing of this chain
-############
-rag.set_chain(chain)
+# Uncomment to test
+chain.invoke(model_input_sample)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Tell MLflow logging where to find your chain.
+# MAGIC
+# MAGIC `mlflow.models.set_model(model=...)` function specifies the LangChain chain to use for evaluation and deployment.  This is required to log this chain to MLflow with `mlflow.langchain.log_model(...)`.
+
+# COMMAND ----------
+
+mlflow.models.set_model(model=chain)

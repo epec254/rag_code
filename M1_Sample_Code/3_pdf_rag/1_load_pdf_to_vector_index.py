@@ -7,7 +7,7 @@
 # MAGIC Getting the right parsing and chunk size requires iteration and a working knowledge of your data - this pipeline is easy to adapt and tweak in order to add more advanced logic.
 # MAGIC
 # MAGIC **Limitations:**
-# MAGIC - This pipeline resets the index every time, mirroring the index to the files in the UC Volume.  A future iteration will only update added/changed/removed files.
+# MAGIC - This pipeline resets the index every time, mirroring the index to the files in the UC Volume.  
 # MAGIC - Splitting based on tokens requires a cluster with internet access.  If you do not have internet access on your cluster, adjust the gold parsing step.
 # MAGIC - You can't change column names in the Vector Index after the tables are initially created - to change column names, delete the Vector Index and re-sync.
 
@@ -35,6 +35,7 @@
 
 from datetime import timedelta
 from typing import List
+import yaml
 import warnings
 
 from databricks.sdk import WorkspaceClient
@@ -252,10 +253,10 @@ except ResourceDoesNotExist as e:
         error = error + " Verify your endpoint is properly configured."
     raise Exception(error)
 
-if w.serving_endpoints.get(embedding_endpoint_name).task != FMAPI_EMBEDDINGS_TASK:
-    raise Exception(
-        f"Your endpoint `{embedding_endpoint_name}` is not of type {FMAPI_EMBEDDINGS_TASK}.  Visit the Foundational Model APIs documentation to create a compatible endpoint: https://docs.databricks.com/en/machine-learning/foundation-models/index.html"
-    )
+# if w.serving_endpoints.get(embedding_endpoint_name).task != FMAPI_EMBEDDINGS_TASK:
+#     raise Exception(
+#         f"Your endpoint `{embedding_endpoint_name}` is not of type {FMAPI_EMBEDDINGS_TASK}.  Visit the Foundational Model APIs documentation to create a compatible endpoint: https://docs.databricks.com/en/machine-learning/foundation-models/index.html"
+#     )
 
 print(f"Embedding model endpoint: `{embedding_endpoint_name}`")
 print("--")
@@ -488,7 +489,7 @@ display(df_parsed)
 
 from transformers import AutoTokenizer
 
-tokenizer = AutoTokenizer.from_pretrained('BAAI/bge-large-en-v1.5')
+tokenizer = AutoTokenizer.from_pretrained('Alibaba-NLP/gte-large-en-v1.5')
 
 # Test the tokenizer
 chunk_example_text = "this is some text in a chunk"
@@ -590,16 +591,55 @@ print(f"Gold Delta Table w/ chunked files: {get_table_url(gold_chunks_table_name
 # COMMAND ----------
 
 # DBTITLE 1,Vector Search RAG Configuration
-rag_config_yaml = f"""
-vector_search_endpoint_name: "{vector_search_endpoint_name}"
-vector_search_index: "{gold_chunks_index_name}"
-# These must be set to use the Review App to match the columns in your index
-vector_search_schema:
-  primary_key: {CHUNK_ID_COLUMN_NAME}
-  chunk_text: {CHUNK_COLUMN_NAME}
-  document_source: {DOC_URI_COL_NAME}
-vector_search_parameters:
-  k: 3
-"""
+rag_config = {
+  "vector_search_endpoint_name": vector_search_endpoint_name,
+  "vector_search_index": gold_chunks_index_name,
+  "vector_search_schema": {
+    "primary_key": CHUNK_ID_COLUMN_NAME,
+    "chunk_text": CHUNK_COLUMN_NAME,
+    "document_source": DOC_URI_COL_NAME
+  },
+  "vector_search_parameters": {
+    "k": 3
+  },
+  "chunk_template": "`{chunk_text}`\n",
+  "chat_endpoint": "databricks-dbrx-instruct",
+  "chat_prompt_template": "You are a trusted assistant that helps answer questions based only on the provided information. If you do not know the answer to a question, you truthfully say you do not know.  Here is some context which might or might not help you answer: {context}.  Answer directly, do not repeat the question, do not start with something like: the answer to the question, do not add AI in front of your answer, do not say: here is the answer, do not mention the context or the question. Based on this context, answer this question: {question}",
+  "chat_prompt_template_variables": [
+    "context",
+    "question"
+  ],
+  "chat_endpoint_parameters": {
+    "temperature": 0.01,
+    "max_tokens": 500
+  }
+}
 
-print(rag_config_yaml)
+print("-----")
+print("-----")
+print("----- Copy this dict to `3_rag_chain_driver_notebook` ---")
+print("-----")
+print("-----")
+print(rag_config)
+
+# Convert the dictionary to a YAML string
+yaml_str = yaml.dump(rag_config)
+
+# Write the YAML string to a file
+with open('2_rag_chain_config.yaml', 'w') as file:
+    file.write(yaml_str)
+
+
+# rag_config_yaml = f"""
+# vector_search_endpoint_name: ""
+# vector_search_index: "{gold_chunks_index_name}"
+# # These must be set to use the Review App to match the columns in your index
+# vector_search_schema:
+#   primary_key: {CHUNK_ID_COLUMN_NAME}
+#   chunk_text: {CHUNK_COLUMN_NAME}
+#   document_source: {DOC_URI_COL_NAME}
+# vector_search_parameters:
+#   k: 3
+# """
+
+# print(rag_config_yaml)
