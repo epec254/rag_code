@@ -53,36 +53,36 @@ EMBEDDING_MODELS = {
 
 # COMMAND ----------
 
-# Bronze table
-DOC_URI_COL_NAME = "doc_uri"
-CONTENT_COL_NAME = "raw_doc_contents_string"
-BYTES_COL_NAME = "raw_doc_contents_bytes"
-BYTES_LENGTH_COL_NAME = "raw_doc_bytes_length"
-MODIFICATION_TIME_COL_NAME = "raw_doc_modification_time"
+# # Bronze table
+# DOC_URI_COL_NAME = "doc_uri"
+# CONTENT_COL_NAME = "raw_doc_contents_string"
+# BYTES_COL_NAME = "raw_doc_contents_bytes"
+# BYTES_LENGTH_COL_NAME = "raw_doc_bytes_length"
+# MODIFICATION_TIME_COL_NAME = "raw_doc_modification_time"
 
-# Bronze table auto loader names
-LOADER_DEFAULT_DOC_URI_COL_NAME = "path"
-LOADER_DEFAULT_BYTES_COL_NAME = "content"
-LOADER_DEFAULT_BYTES_LENGTH_COL_NAME = "length"
-LOADER_DEFAULT_MODIFICATION_TIME_COL_NAME = "modificationTime"
+# # Bronze table auto loader names
+# LOADER_DEFAULT_DOC_URI_COL_NAME = "path"
+# LOADER_DEFAULT_BYTES_COL_NAME = "content"
+# LOADER_DEFAULT_BYTES_LENGTH_COL_NAME = "length"
+# LOADER_DEFAULT_MODIFICATION_TIME_COL_NAME = "modificationTime"
 
-# Silver table
-PARSED_OUTPUT_STRUCT_COL_NAME = "parser_output"
-PARSED_OUTPUT_CONTENT_COL_NAME = "doc_parsed_contents"
-PARSED_OUTPUT_STATUS_COL_NAME = "parser_status"
-PARSED_OUTPUT_METADATA_COL_NAME = "parser_metadata"
+# # Silver table
+# PARSED_OUTPUT_STRUCT_COL_NAME = "parser_output"
+# PARSED_OUTPUT_CONTENT_COL_NAME = "doc_parsed_contents"
+# PARSED_OUTPUT_STATUS_COL_NAME = "parser_status"
+# PARSED_OUTPUT_METADATA_COL_NAME = "parser_metadata"
 
-# Gold table
+# # Gold table
 
-# intermediate values
-CHUNKED_OUTPUT_STRUCT_COL_NAME = "chunker_output"
-CHUNKED_OUTPUT_ARRAY_OF_CHUNK_TEXT_COL_NAME = "chunked_texts"
-CHUNKED_OUTPUT_CHUNKER_STATUS_COL_NAME = "chunker_status"
-CHUNKED_OUTPUT_CHUNKER_METADATA_COL_NAME = "chunker_metadata"
+# # intermediate values
+# CHUNKED_OUTPUT_STRUCT_COL_NAME = "chunker_output"
+# CHUNKED_OUTPUT_ARRAY_OF_CHUNK_TEXT_COL_NAME = "chunked_texts"
+# CHUNKED_OUTPUT_CHUNKER_STATUS_COL_NAME = "chunker_status"
+# CHUNKED_OUTPUT_CHUNKER_METADATA_COL_NAME = "chunker_metadata"
 
-FULL_DOC_PARSED_OUTPUT_COL_NAME = "parent_doc_parsed_contents"
-CHUNK_TEXT_COL_NAME = "chunk_text"
-CHUNK_ID_COL_NAME = "chunk_id"
+# FULL_DOC_PARSED_OUTPUT_COL_NAME = "parent_doc_parsed_contents"
+# CHUNK_TEXT_COL_NAME = "chunk_text"
+# CHUNK_ID_COL_NAME = "chunk_id"
 
 # COMMAND ----------
 
