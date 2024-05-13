@@ -52,9 +52,9 @@ mlflow.set_registry_uri('databricks-uc')
 
 # COMMAND ----------
 
-# Create widgets for user input
-dbutils.widgets.text("uc_catalog", "catalog", "Unity Catalog")
-dbutils.widgets.text("uc_schema", "schema", "Unity Catalog Schema")
+# Create widgets 
+dbutils.widgets.text("uc_catalog", "", "Unity Catalog")
+dbutils.widgets.text("uc_schema", "", "Unity Catalog Schema")
 dbutils.widgets.text("model_name", "hello_world", "Model Name")
 
 # Retrieve the values from the widgets
@@ -105,12 +105,6 @@ with mlflow.start_run():
         artifact_path="chain",
         input_example=input_example,
         example_no_conversion=True, # required to allow the schema to work
-        # TEMPORARY CODE UNTIL WHEEL IS PUBLISHED
-        pip_requirements=[
-            "mlflow>=2.12.0",
-            "git+https://github.com/mlflow/mlflow.git@master",
-            "databricks_rag_studio==0.1.0",
-        ],
     )
 
 # COMMAND ----------
@@ -172,5 +166,5 @@ print(parse_deployment_info(deployment_info))
 # DBTITLE 1,View deployments
 deployments = rag_studio.list_deployments()
 for deployment in deployments:
-  if deployment.model_name == uc_model_fqdn and deployment.model_version==uc_registered_chain_info.version:
+  if deployment.model_name == uc_model_fqn and deployment.model_version==uc_registered_model_info.version:
     print(parse_deployment_info(deployment))
