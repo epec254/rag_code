@@ -20,7 +20,7 @@
 # COMMAND ----------
 
 # DBTITLE 1,Databricks RAG Studio Installer
-# MAGIC %run ../wheel_installer
+# MAGIC %pip install databricks-rag-studio "mlflow@git+https://github.com/mlflow/mlflow.git@027c9c7b56265d8c50588b7f01c521296a1d3e2b"
 
 # COMMAND ----------
 
@@ -105,6 +105,9 @@ with mlflow.start_run():
         artifact_path="chain",
         input_example=input_example,
         example_no_conversion=True, # required to allow the schema to work
+        extra_pip_requirements=[ # temporary workaround needed during Private Preview
+            "databricks-rag-studio==0.2.0"
+        ]
     )
 
 # COMMAND ----------
