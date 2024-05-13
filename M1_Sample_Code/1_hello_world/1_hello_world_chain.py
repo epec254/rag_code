@@ -105,7 +105,9 @@ question = {
     ]
 }
 
-chain.invoke(question)
+# Uncomment this line to test the chain locally
+# Private Preview workaround: We suggest commenting this line out before you log the model.  This is not strictly necessary but doing so will prevent additional MLflow traces from being show when calling mlflow.langchain.log_model(...).
+# chain.invoke(question)
 
 # COMMAND ----------
 
