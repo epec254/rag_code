@@ -1,11 +1,11 @@
 # Databricks notebook source
 # DBTITLE 1,Install RAG Studio packages
-# MAGIC %pip install databricks-rag-studio "mlflow@git+https://github.com/mlflow/mlflow.git@027c9c7b56265d8c50588b7f01c521296a1d3e2b"
+# MAGIC %pip install databricks-rag-studio "mlflow@git+https://github.com/mlflow/mlflow.git@databricks-rag-studio"
 
 # COMMAND ----------
 
 # Before logging this chain using the driver notebook, you need to comment out this line.
-# dbutils.library.restartPython() 
+dbutils.library.restartPython() 
 
 # COMMAND ----------
 
