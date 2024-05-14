@@ -1,4 +1,4 @@
-# RAG Studio Demo Code
+# RAG Studio
 
 Note: This feature is in [Private Preview](https://docs.databricks.com/en/release-notes/release-types.html). To try it, reach out to your Databricks contact or [rag-feedback@databricks.com](mailto:rag-feedback@databricks.com).
 
@@ -6,13 +6,13 @@ The software and other materials included in this repo ("Copyrighted Materials")
 
 # Product overview
 
-**RAG Studio:** A marketing name that encompasses the upgraded Mosaic AI platform capabilities for building high-quality Retrieval Augmented Generation (RAG) applications:
+**RAG Studio:** The set of upgraded Mosaic AI platform capabilities for building high-quality Retrieval Augmented Generation (RAG) applications:
   - **MLflow:** Support for logging, parameterizing, and tracing Chains that are unified between development & production.  Chains can be logged as code vs. pickled.
   - **Model Serving:** Support for hosting Chains e.g., token streaming, automated authentication of Databricks services used in your chain, feedback API and a simplified chain deployment API
   - **RAG Cookbook:** Sample code & how-to guide offering an opinionated end-to-end workflow for building RAG apps [this repo]
   - *[Future release] Lakehouse Monitoring: Capabilities for monitoring your apps once in production*
 
-**Evaluation Suite:** Built-for-purpose tools to evaluate Generative AI Apps, starting with RAG apps:
+**Evaluation Suite:** Built-for-purpose tools to evaluate Generative AI App quality, starting with RAG apps:
   - **Evaluation Harness:** evaluate(...) command that runs the evaluation
   - **Review App:** UI tool for collecting stakeholder feedback & building evaluation sets
   - **Databricks LLM Judges:** Databricks' proprietary AI-assisted judges for evaluating RAG quality.  Can be tuned with customer provided examples to increase agreement with human raters.
@@ -22,18 +22,18 @@ The software and other materials included in this repo ("Copyrighted Materials")
 
 # Table of contents
 
-1. [Product documentation](#Product documentation)
-2. [Known limitations](#Known limitations)
-3. [Sample code](#Sample code)
-    - [RAG Cookbook](#RAG Cookbook)
-      - [PDF Bot w/ single-turn conversation](#PDF Bot w/ single-turn conversation)
-      - [PDF Bot w/ multi-turn conversation](#PDF Bot w/ multi-turn conversation)
-      - [Advanced data pipeline for tuning parsing, chunking, embedding strategy](#Advanced data pipeline for tuning parsing, chunking, embedding strategy)
-    - [How to tutorials](#How to tutorials)
-      - [Tutorial 1: Creating, logging & deploying chains](#Tutorial 1: Creating, logging & deploying chains)
-      - [Tutorial 2: Parameterizing chains](#Tutorial 2: Parameterizing chains)
-      - [Tutorial 3: Running evaluation on a logged RAG chain](#Tutorial 3: Running evaluation on a logged RAG chain)
-      - [Tutorial 4: Running evaluation on a RAG chain or app built outside of RAG Studio](#Tutorial 4: Running evaluation on a RAG chain or app built outside of RAG Studio)
+1. [Product documentation](#product-documentation)
+2. [Known limitations](#known-limitations)
+3. [Sample code](#sample-code)
+    - [RAG Cookbook](#rag-cookbook)
+      - [PDF Bot w/ single-turn conversation](#pdf-bot-w-single-turn-conversation)
+      - [PDF Bot w/ multi-turn conversation](#pdf-bot-w-multi-turn-cconversation)
+      - [Advanced data pipeline for tuning parsing, chunking, embedding strategy](#advanced-data-pipeline-for-tuning-parsing-chunking-embedding-strategy)
+    - [How to tutorials](#how-to-tutorials)
+      - [Tutorial 1: Creating, logging & deploying chains](#tutorial-1-creating-logging-deploying-chains)
+      - [Tutorial 2: Parameterizing chains](#tutorial-2-parameterizing-chains)
+      - [Tutorial 3: Running evaluation on a logged RAG chain](#tutorial-3-running-evaluation-on-a-logged-rag-chain)
+      - [Tutorial 4: Running evaluation on a RAG chain or app built outside of RAG Studio](#tutorial-4-running-evaluation-on-a-RAG-chain-or-app-built-outside-of-rag-studio)
 
 # Product documentation
 
@@ -50,8 +50,6 @@ Our documentation provides a comprehensive overview of the above functionality:
 - Serialization-based MLFlow logging has not been tested with RAG Studio
 - Code-based MLflow logging captures all loaded Python packages in the Driver Notebook as the `pip_requirements` for the MLflow model - if you need to add or remove requirements, pass a custom `pip_requirements` array that includes `"databricks-rag-studio==0.2.0"`.
 - Some parts of the product documentation are still work-in-progress
-
-
 
 # Sample code
 
