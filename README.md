@@ -20,13 +20,30 @@ The software and other materials included in this repo ("Copyrighted Materials")
   - **Customer-defined LLM Judges:** Databricks framework to quickly define custom judges that evaluate business / use-case specific aspects of quality
   - *[Future release] Custom metrics: Provide a user-defined function to run and record its value as an evaluation metric.*
 
+# Table of contents
+
+1. [Known limitations](#Known limitations)
+2. [Product documentation](#Product documentation)
+3. [Sample code](#Sample code)
+    - [RAG Cookbook](#RAG Cookbook)
+      - PDF Bot w/ single-turn conversation
+      - PDF Bot w/ multi-turn conversation
+      - Advanced data pipeline for tuning parsing, chunking, embedding strategy
+    - [How to tutorials](#How to tutorials)
+      - [Tutorial 1: Creating, logging & deploying chains](#Tutorial 1: Creating, logging & deploying chains)
+      - [Tutorial 2: Parameterizing chains](#Tutorial 2: Parameterizing chains)
+      - [Tutorial 3: Running evaluation on a logged RAG chain](#Tutorial 3: Running evaluation on a logged RAG chain)
+      - [Tutorial 4: Running evaluation on a RAG chain or app built outside of RAG Studio](#Tutorial 4: Running evaluation on a RAG chain or app built outside of RAG Studio)
+
 # Known limitations
 
 - Only tested on Databricks Runtime 15.0 and 14.3 Single User clusters.  They have not been tested on MLR or Shared Clusters.
 - Only supports chains using the Langchain framework. Generic Python functionality is coming soon.
 - Chains that need custom credentials for external services e.g., directly calling 3rd party APIs require these credentials to be manually configured in the model serving UI after calling `deploy_model(...)`
 - Support for custom Python library dependencies and versions e.g., `pip_requirements` in `mlflow.langchain.log_model(...)` has not been tested extensively.
-
+- Serialization-based MLFlow logging has not been tested with RAG Studio
+- Code-based MLflow logging captures all loaded Python packages in the Driver Notebook as the `pip_requirements` for the MLflow model - if you need to add or remove requirements, pass a custom `pip_requirements` array that includes `"databricks-rag-studio==0.2.0"`.
+- Some parts of the product documentation are still work-in-progress
 
 # Product documentation
 
@@ -43,12 +60,8 @@ Our documentation provides a comprehensive overview of the above functionality:
 xxxx
 
 
-1. [Tutorials](#Tutorials)
-    - Tutorial 1: Logging & deploying chains
-    - Tutorial 2: Parameterizing chains
-    - 
 
-## Tutorials
+## How to tutorials
 
 ### Tutorial 1: Creating, logging & deploying chains
 
@@ -60,7 +73,9 @@ xxxx
 
 ### Tutorial 3: Running evaluation on a logged RAG chain
 
-### Tutorial 4: Running evaluation on an existing RAG chain / app built outside of RAG Studio
+[This tutorial](Tutorials/3_evaluation_of_existing_chains/README.md) walks you through using Evaluation Suite to evaluate the quality of a RAG chain built with RAG Studio.
+
+### Tutorial 4: Running evaluation on a RAG chain or app built outside of RAG Studio
 
 [This tutorial](Tutorials/4_evaluation_of_existing_chains/README.md) walks you through using Evaluation Suite to evaluate the quality of a RAG chain built outside of RAG Studio or already deployed outside of Databricks.
 
@@ -70,6 +85,3 @@ These items are currently covered in the documentation, but will be covered in f
 - Improving LLM judge agreement with human raters using few-shot examples
 - Curating an Evaluation Set using feedback from the Review App
 - Measuring use-case specific aspects of quality with customer-defined LLM judges
-
-## Tutorial 3: Creating & evaluating a RAG chain
-

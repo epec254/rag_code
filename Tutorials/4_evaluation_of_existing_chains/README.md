@@ -19,7 +19,7 @@ First, you need to ETL your chain's logs into the Evaluation Harness input schem
 These Dictionary-based examples are provided just to show the schema. You do NOT have to start from a Dictionary - you can use any existing Pandas or Spark DataFrame with this schema.
 
 Below, we walk you through the 5 levels of data that you may have available.  As you increase your data level, Evaluation Suite can offer you additional functionality
-| **Required data/metrics**                                             | Level 1 | Level 2 | Level 3 | Level 4 |
+|                                             | Level 1 | Level 2 | Level 3 | Level 4 |
 |-----------------------------------------------------------------------|---------|---------|---------|---------|
 | **Required data**                                     |        |        |        |        |
 | Chain logs: `request`, `response`                                     | ✔       | ✔       | ✔       | ✔       |
