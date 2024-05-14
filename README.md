@@ -27,11 +27,17 @@ Our documentation provides a comprehensive overview of the above functionality:
 - [RAG Studio & Evaluation Suite.pdf](<RAG Studio Overview Docs.pdf>)
 - [MLflow Tracing.pdf](<Documentation/MLflow Tracing.pdf>)
 
-# Sample RAG Apps
+
+# Sample code
 
 *Note: While stored in the Git repo as `.py` files, these `.py` files are actually Databricks Notebooks - if you import the file using Databricks, it will render as a Notebook in the Notebook editor.  We suggest adding a Git Folder in your Databricks workspace based on a forked copy of this repo.*
 
-# Learning RAG Studio Tutorials
+## RAG Cookbook
+
+
+## Learning RAG Studio Tutorials
+
+These tutorials introduce you to the basics of creating, logging, and parameterizing a Chain using MLflow's upgraded capabilities.
 
 ## Tutorial 1: Hello world
 
