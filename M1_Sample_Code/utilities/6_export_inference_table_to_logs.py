@@ -2,7 +2,7 @@
 # MAGIC %md
 # MAGIC # Unpack inference table to request_log & assessment_log
 # MAGIC
-# MAGIC ⚠️⚠️ 🐛🐛 Experimental features likely have bugs! 🐛🐛 ⚠️⚠️
+# MAGIC IMPORTANT NOTE: This unpacking now happens automatically every ~1 hour.  If you ned to see logs from your Review App or Endpoint faster than 1 hour, you can use this Notebook.
 # MAGIC
 # MAGIC Use this notebook to turn your chain's Inference Table into a well-formed `request_log` and `assessment_log` table.
 # MAGIC
