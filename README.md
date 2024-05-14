@@ -38,7 +38,7 @@ The software and other materials included in this repo ("Copyrighted Materials")
 # Product documentation
 
 Our documentation provides a comprehensive overview of the above functionality:
-- [RAG Studio & Evaluation Suite.pdf](<RAG Studio Overview Docs.pdf>)
+- [RAG Studio & Evaluation Suite - Documentation + Release Notes](<Documentation/RAG Studio & Evaluation Suite - Customer Documentation + Release Notes.pdf>)
 - [MLflow Tracing.pdf](<Documentation/MLflow Tracing.pdf>)
 
 # Known limitations
