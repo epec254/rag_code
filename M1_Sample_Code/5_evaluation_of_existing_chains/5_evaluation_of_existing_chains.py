@@ -296,9 +296,7 @@ with mlflow.start_run(run_name="level_4_data"):
 
 # COMMAND ----------
 
-
 metrics_as_dict = evaluation_results.metrics
-metrics_as_pd_df = pd.DataFrame([evaluation_results.metrics])
 
 print("Aggregate metrics computed:")
 display(metrics_as_dict)

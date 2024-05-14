@@ -311,7 +311,7 @@ print(f"Chain notebook path: {chain_notebook_path}")
 # Update this config from the output of the last cell of `1_load_pdf_vector_index`
 # You can simply copy / paste the JSON that dumped from the last cell and replace the entire `baseline_config`.
 baseline_config = {
-    "vector_search_endpoint_name": "REPLACE ME WITH VALUE FROM 1_load_pdf_vector_index",
+        "vector_search_endpoint_name": "REPLACE ME WITH VALUE FROM 1_load_pdf_vector_index",
     "vector_search_index": "REPLACE ME WITH VALUE FROM 1_load_pdf_vector_index",
     "vector_search_schema": {
         "primary_key": "chunk_id",
