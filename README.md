@@ -4,28 +4,34 @@ Note: This feature is in [Private Preview](https://docs.databricks.com/en/releas
 
 The software and other materials included in this repo ("Copyrighted Materials") are protected by US and international copyright laws and are the property of Databricks, Inc. The Copyrighted Materials are not provided under a license for public or third-party use. Accordingly, you may not access, use, copy, modify, publish, and/or distribute the Copyrighted Materials unless you have received prior written authorization or a license from Databricks to do so.
 
+# What is included?
+
+**RAG Studio:** A marketing name that encompasses the upgraded Mosaic AI platform capabilities for building high-quality Retrieval Augmented Generation (RAG) applications:
+  - **MLflow:** Support for logging, parameterizing, and tracing Chains that are unified between development & production.  Chains can be logged as code vs. pickled.
+  - **Model Serving:** Support for hosting Chains e.g., token streaming, automated authentication of Databricks services used in your chain, feedback API and a simplified chain deployment API
+  - **RAG Cookbook:** Sample code & how-to guide offering an opinionated end-to-end workflow for building RAG apps [this repo]
+  - *[Future release] Lakehouse Monitoring: Capabilities for monitoring your apps once in production*
+
+**Evaluation Suite:** Built-for-purpose tools to evaluate Generative AI Apps, starting with RAG apps:
+  - **Evaluation Harness:** evaluate(...) command that runs the evaluation
+  - **Review App:** UI tool for collecting stakeholder feedback & building evaluation sets
+  - **Databricks LLM Judges:** Databricks' proprietary AI-assisted judges for evaluating RAG quality.  Can be tuned with customer provided examples to increase agreement with human raters.
+  - **Metrics:** A set of Databricks-defined metrics for measuring quality/cost/latency of your chain.  Most metrics are defined using the output of the Databricks LLM judges.
+  - **Customer-defined LLM Judges:** Databricks framework to quickly define custom judges that evaluate business / use-case specific aspects of quality
+  - *[Future release] Custom metrics: Provide a user-defined function to run and record its value as an evaluation metric.*
+
+
 # Documentation
 
-We suggest following the below tutorials to get started, but you can also refer to our documentation:
-- [RAG Studio Overview Docs.pdf](<RAG Studio Overview Docs.pdf>)
-- [Evaluation Suite Doc.pdf](<Evaluation Suite Doc.pdf>)
-- [MLflow Tracing Docs.pdf](<MLflow Tracing Docs.pdf>)
+Our documentation provides a comprehensive overview of the above functionality:
+- [RAG Studio & Evaluation Suite.pdf](<RAG Studio Overview Docs.pdf>)
+- [MLflow Tracing.pdf](<Documentation/MLflow Tracing.pdf>)
 
-# Tutorials
-
-**Important: Before you start, open the [`wheel_installer`](M1_Sample_Code/wheel_installer.py) notebook and replace the `PUT_*` placeholders with the URLs you recieved from your Databricks representative.**
-
-```
-%pip install --quiet "PUT_RAG_EVAL_SUITE_WHEEL_HERE"
-%pip install --quiet "PUT_RAG_STUDIO_WHEEL_HERE"
-
-%pip install opentelemetry-api opentelemetry-sdk databricks-vectorsearch tiktoken langchain langchainhub faiss-cpu -U -q
-%pip uninstall mlflow mlflow-skinny -y # uninstall existing mlflow to avoid installation issues
-%pip install "PUT_MLFLOW_WHEEL_HERE" -U
-%pip install "PUT_MLFLOW_SKINNY_WHEEL_HERE" -U
-```
+# Sample RAG Apps
 
 *Note: While stored in the Git repo as `.py` files, these `.py` files are actually Databricks Notebooks - if you import the file using Databricks, it will render as a Notebook in the Notebook editor.  We suggest adding a Git Folder in your Databricks workspace based on a forked copy of this repo.*
+
+# Learning RAG Studio Tutorials
 
 ## Tutorial 1: Hello world
 
@@ -60,8 +66,8 @@ How to access configuration settings:
 ############
 # Get the configuration YAML
 ############
-rag_config = RagConfig("1_hello_world_config.yaml")
-rag_config.get('sample_param')
+model_config = mlflow.models.ModelConfig(development_config="1_hello_world_config.yaml")
+model_config.get('sample_param')
 ```
 
 ## Tutorial 3: Creating & evaluating a RAG chain
