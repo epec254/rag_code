@@ -30,14 +30,24 @@ Our documentation provides a comprehensive overview of the above functionality:
 
 # Sample code
 
-*Note: While stored in the Git repo as `.py` files, these `.py` files are actually Databricks Notebooks - if you import the file using Databricks, it will render as a Notebook in the Notebook editor.  We suggest adding a Git Folder in your Databricks workspace based on a forked copy of this repo.*
+*Note: While stored in the Git repo as `.py` files, these `.py` files are actually Databricks Notebooks - if you import the file using Databricks, it will render as a Notebook in the Notebook editor.  **To get started, clone this repo as a Git Folder in your Databricks workspace.***
 
 ## RAG Cookbook
 
+## Tutorials: Evaluation Suite
 
-## Learning RAG Studio Tutorials
+### Running evaluation on an existing RAG chain / app
 
-These tutorials introduce you to the basics of creating, logging, and parameterizing a Chain using MLflow's upgraded capabilities.
+### Coming soon
+These items are currently covered in the documentation, but we will release additional hands-on tutorials.  If you need one of these sooner, please contact us at [rag-feedback@databricks.com](mailto:rag-feedback@databricks.com).
+
+- Improving LLM judge agreement with human raters using few-shot examples
+- Curating an Evaluation Set using feedback from the Review App
+- Measuring use-case specific aspects of quality with customer-defined LLM judges
+
+## Tutorials: RAG Studio
+
+Tutorials 1 and 2 introduce you to the basics of creating, logging, and parameterizing a Chain using MLflow's upgraded capabilities.
 
 ## Tutorial 1: Hello world
 
@@ -107,26 +117,3 @@ To understand the evaluation metrics and LLM judges that are used to evaluate yo
 
 The chain [`4_rag_chain_w_conversation_history`](M1_Sample_Code/4_rag_chain_w_conversation_history/4_rag_chain_w_conversation_history.py) and [`4_rag_chain_w_conversation_history_config.yaml`](M1_Sample_Code/4_rag_chain_w_conversation_history/4_rag_chain_w_conversation_history_config.yaml) is an example showing you how to enable multi-turn conversation with a query re-writer prompt.  The accompanying driver notebook [`4_rag_chain_w_conversation_history_driver_notebook`](M1_Sample_Code/4_rag_chain_w_conversation_history/4_rag_chain_w_conversation_history_driver_notebook.py) follows the same workflow as the driver notebook from [Tutorial 3](M1_Sample_Code/3_pdf_rag) to log and evaluate this chain.
 
-## 5. Advanced Evaluation
-### 5a. Using RAG Evaluation Suite without RAG Studio
-
-If you have a RAG chain that was deployed outside of RAG Studio, you can still use the Evaluation Suite to assess the chain's quality.  See [`5_evaluation_without_rag_studio`](M1_Sample_Code/5_evaluation_without_rag_studio.py) to see how to do this.
-
-### 5b. Improving LLM judge accuracy with few-shot examples
-
-To improve the accuracy of the Databricks judges, you can provide few-shot examples of "good" and "bad" answers for each LLM judge.  Databricks strongly reccomends providing at least 2 postive and 2 negative examples per judge to improve the accuracy.  See the bottom of the notebook [`5_evaluation_without_rag_studio`](M1_Sample_Code/5_evaluation_without_rag_studio.py) for how to do this.  
-
-*Note: Even though this example configuration is included in the non-RAG Studio evaluation example, you can use the example configuration with the RAG Studio evaluation tutorials above.*
-
-## 6. Review user feedback from the Review App
-
-You can use the human feedback collected using the Review App to:
-- Determine where you chain is working well and/or not working
-- Curate an evaluation set for offline evaluation
-- Fine tune a generation or embedding model to improve quality
-
-All deployed models from RAG Studio automatically collect trace logs and human feedback to an Inference Table.  Use the notebook [`6_export_inference_table_to_logs`](M1_Sample_Code/6_export_inference_table_to_logs.py) to turn this Inference Table into a well-schemed `request_log` (with traces) and `assessment_log` with human feedback.
-
-## 7. Request expert stakeholder input on logs
-
-If you are unsure if a request/response from your deployed RAG Chain is correct or you got negative feedback on the request/response but are unsure why, you can use the Review App to request human feedback on requests from a deployed RAG chain. 
