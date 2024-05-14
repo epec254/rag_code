@@ -19,7 +19,7 @@
 # COMMAND ----------
 
 # DBTITLE 1,Databricks RAG Studio Installer
-# MAGIC %run ../wheel_installer
+# MAGIC %pip install databricks-rag-studio "mlflow@git+https://github.com/mlflow/mlflow.git@027c9c7b56265d8c50588b7f01c521296a1d3e2b"
 
 # COMMAND ----------
 
@@ -51,9 +51,9 @@ mlflow.set_registry_uri('databricks-uc')
 
 # COMMAND ----------
 
-# Create widgets for user input
-dbutils.widgets.text("uc_catalog", "catalog", "Unity Catalog")
-dbutils.widgets.text("uc_schema", "schema", "Unity Catalog Schema")
+# Create widgets 
+dbutils.widgets.text("uc_catalog", "", "Unity Catalog")
+dbutils.widgets.text("uc_schema", "", "Unity Catalog Schema")
 dbutils.widgets.text("model_name", "hello_world_parameterized", "Model Name")
 
 # Retrieve the values from the widgets
@@ -83,7 +83,11 @@ input_example = {
 chain_notebook_file = "2_hello_world_parameterized_chain"
 chain_notebook_path = os.path.join(os.getcwd(), chain_notebook_file)
 
+config_yaml_file = "configs/2_hello_world_config.yaml"
+chain_yaml_path = os.path.join(os.getcwd(), config_yaml_file)
+
 print(f"Chain notebook path: {chain_notebook_path}")
+print(f"Config notebook path: {chain_yaml_path}")
 
 # COMMAND ----------
 
@@ -109,6 +113,7 @@ print(f"Chain notebook path: {chain_notebook_path}")
 configs_to_test = {
     "config_1": {"config": {"sample_param": "this could be prompt variant #1"}},
     "config_2": {"config": {"sample_param": "this is prompt variant #2"}},
+    "config_3": {"config": chain_yaml_path},
 }
 
 # Log each configuration to an MLflow Run
@@ -119,19 +124,18 @@ for config_name, config_details in configs_to_test.items():
     with mlflow.start_run(run_name=config_name):
         logged_chain_info = mlflow.langchain.log_model(
             lc_model=chain_notebook_path,
-            model_config=config_details['config'],  # The configuration to test - this can also be a YAML file path rather than a Dict.
+            model_config=config_details[
+                "config"
+            ],  # The configuration to test - this can also be a YAML file path rather than a Dict.
             artifact_path="chain",
             input_example=input_example,
             example_no_conversion=True,  # required to allow the schema to work
-            # TEMPORARY CODE UNTIL WHEEL IS PUBLISHED
-            pip_requirements=[
-                "mlflow>=2.12.0",
-                "git+https://github.com/mlflow/mlflow.git@master",
-                "databricks_rag_studio==0.1.0",
+            extra_pip_requirements=[  # temporary workaround needed during Private Preview
+                "databricks-rag-studio==0.2.0"
             ],
         )
         # Save a pointer to the Run for later evaluation of the chains.
-        config_details['logged_chain_info'] = logged_chain_info
+        config_details["logged_chain_info"] = logged_chain_info
 
 # COMMAND ----------
 
@@ -160,7 +164,7 @@ model_input = {
 
 for config_name, config_items in configs_to_test.items():
     print(f"Config: {config_name}")
-    chain = mlflow.langchain.load_model(config_items['model_info'].model_uri)
+    chain = mlflow.langchain.load_model(config_items['logged_chain_info'].model_uri)
     print(chain.invoke(model_input))
     print("--\n")
 
@@ -209,10 +213,3 @@ deployment_info = rag_studio.deploy_model(model_name=uc_model_fqn, version=uc_re
 print(parse_deployment_info(deployment_info))
 
 # Note: It can take up to 15 minutes to deploy - we are working to reduce this time to seconds.
-
-# COMMAND ----------
-
-# MAGIC %pip uninstall mlflow -y 
-# MAGIC %pip install "https://ml-team-public-read.s3.us-west-2.amazonaws.com/mlflow-tracing/wheels/mlflow-2.12.1-20240430-py3-none-any.whl" -U
-# MAGIC %pip install "https://ml-team-public-read.s3.us-west-2.amazonaws.com/mlflow-tracing/wheels/mlflow_skinny-2.12.1-20240430-py3-none-any.whl" -U
-# MAGIC
