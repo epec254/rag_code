@@ -303,7 +303,7 @@ print(f"Chain notebook path: {chain_notebook_path}")
 # MAGIC ## Log & evaluate the chain
 # MAGIC Log the chain to the Notebook's MLflow Experiment inside a Run. The model is logged to the Notebook's MLflow Experiment as a run.
 # MAGIC
-# MAGIC To learn more about the metrics that are computed, see [TODO INSERT LINK].
+# MAGIC To learn more about the metrics that are computed, see the documentation.
 
 # COMMAND ----------
 
