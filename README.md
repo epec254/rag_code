@@ -22,18 +22,24 @@ The software and other materials included in this repo ("Copyrighted Materials")
 
 # Table of contents
 
-1. [Known limitations](#Known limitations)
-2. [Product documentation](#Product documentation)
+1. [Product documentation](#Product documentation)
+2. [Known limitations](#Known limitations)
 3. [Sample code](#Sample code)
     - [RAG Cookbook](#RAG Cookbook)
-      - PDF Bot w/ single-turn conversation
-      - PDF Bot w/ multi-turn conversation
-      - Advanced data pipeline for tuning parsing, chunking, embedding strategy
+      - [PDF Bot w/ single-turn conversation](#PDF Bot w/ single-turn conversation)
+      - [PDF Bot w/ multi-turn conversation](#PDF Bot w/ multi-turn conversation)
+      - [Advanced data pipeline for tuning parsing, chunking, embedding strategy](#Advanced data pipeline for tuning parsing, chunking, embedding strategy)
     - [How to tutorials](#How to tutorials)
       - [Tutorial 1: Creating, logging & deploying chains](#Tutorial 1: Creating, logging & deploying chains)
       - [Tutorial 2: Parameterizing chains](#Tutorial 2: Parameterizing chains)
       - [Tutorial 3: Running evaluation on a logged RAG chain](#Tutorial 3: Running evaluation on a logged RAG chain)
       - [Tutorial 4: Running evaluation on a RAG chain or app built outside of RAG Studio](#Tutorial 4: Running evaluation on a RAG chain or app built outside of RAG Studio)
+
+# Product documentation
+
+Our documentation provides a comprehensive overview of the above functionality:
+- [RAG Studio & Evaluation Suite.pdf](<RAG Studio Overview Docs.pdf>)
+- [MLflow Tracing.pdf](<Documentation/MLflow Tracing.pdf>)
 
 # Known limitations
 
@@ -45,11 +51,6 @@ The software and other materials included in this repo ("Copyrighted Materials")
 - Code-based MLflow logging captures all loaded Python packages in the Driver Notebook as the `pip_requirements` for the MLflow model - if you need to add or remove requirements, pass a custom `pip_requirements` array that includes `"databricks-rag-studio==0.2.0"`.
 - Some parts of the product documentation are still work-in-progress
 
-# Product documentation
-
-Our documentation provides a comprehensive overview of the above functionality:
-- [RAG Studio & Evaluation Suite.pdf](<RAG Studio Overview Docs.pdf>)
-- [MLflow Tracing.pdf](<Documentation/MLflow Tracing.pdf>)
 
 
 # Sample code
@@ -57,9 +58,17 @@ Our documentation provides a comprehensive overview of the above functionality:
 *Note: While stored in the Git repo as `.py` files, these `.py` files are actually Databricks Notebooks - if you import the file using Databricks, it will render as a Notebook in the Notebook editor.  **To get started, clone this repo as a Git Folder in your Databricks workspace.***
 
 ## RAG Cookbook
-xxxx
+
+### PDF Bot w/ single-turn conversation
+
+[This cookbook](RAG Cookbook/3_pdf_rag_with_single_turn_chat/README.md) creates a simple RAG chain with PDF files stored in a UC Volume.  
+
+### PDF Bot w/ multi-turn conversation
+
+[This cookbook](RAG Cookbook/4_pdf_rag_with_multi_turn_chat/README.md) creates a multi-turn conversation capable RAG chain with PDF files stored in a UC Volume.  *This cookbook is identical to the single-turn converastion cookbook, except for mintor changes to the chain & configuration to support multi-turn conversations.*
 
 
+### Advanced data pipeline for tuning parsing, chunking, embedding strategy
 
 ## How to tutorials
 
