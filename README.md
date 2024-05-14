@@ -59,11 +59,11 @@ Our documentation provides a comprehensive overview of the above functionality:
 
 ### PDF Bot w/ single-turn conversation
 
-[This cookbook](RAG Cookbook/3_pdf_rag_with_single_turn_chat/README.md) creates a simple RAG chain with PDF files stored in a UC Volume.  
+[This cookbook](RAG%20Cookbook/3_pdf_rag_with_single_turn_chat/README.md) creates a simple RAG chain with PDF files stored in a UC Volume.  
 
 ### PDF Bot w/ multi-turn conversation
 
-[This cookbook](RAG Cookbook/4_pdf_rag_with_multi_turn_chat/README.md) creates a multi-turn conversation capable RAG chain with PDF files stored in a UC Volume.  *This cookbook is identical to the single-turn converastion cookbook, except for mintor changes to the chain & configuration to support multi-turn conversations.*
+[This cookbook](RAG%20Cookbook/4_pdf_rag_with_multi_turn_chat/README.md) creates a multi-turn conversation capable RAG chain with PDF files stored in a UC Volume.  *This cookbook is identical to the single-turn converastion cookbook, except for mintor changes to the chain & configuration to support multi-turn conversations.*
 
 
 ### Advanced data pipeline for tuning parsing, chunking, embedding strategy
@@ -86,7 +86,7 @@ Our documentation provides a comprehensive overview of the above functionality:
 
 [This tutorial](Tutorials/4_evaluation_of_existing_chains/README.md) walks you through using Evaluation Suite to evaluate the quality of a RAG chain built outside of RAG Studio or already deployed outside of Databricks.
 
-### Additional tutorials coming soon
+### Additional tutorials being worked on
 These items are currently covered in the documentation, but will be covered in future hands-on tutorials.  If you need one of these sooner, please contact us at [rag-feedback@databricks.com](mailto:rag-feedback@databricks.com).
 
 - Improving LLM judge agreement with human raters using few-shot examples
