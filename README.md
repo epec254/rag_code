@@ -20,6 +20,10 @@ The software and other materials included in this repo ("Copyrighted Materials")
   - **Customer-defined LLM Judges:** Databricks framework to quickly define custom judges that evaluate business / use-case specific aspects of quality
   - *[Future release] Custom metrics: Provide a user-defined function to run and record its value as an evaluation metric.*
 
+# Release notes & upcoming releases
+
+[M2 release notes & upcoming releases](<Documentation/RAG Studio - M2 release notes & upcoming releases.pdf>)
+
 # Table of contents
 
 1. [Product documentation](#product-documentation)
@@ -59,11 +63,11 @@ Our documentation provides a comprehensive overview of the above functionality:
 
 ### PDF Bot w/ single-turn conversation
 
-[This cookbook](RAG%20Cookbook/3_pdf_rag_with_single_turn_chat/README.md) creates a simple RAG chain with PDF files stored in a UC Volume.  
+[This cookbook](RAG%20Cookbook/A_pdf_rag_with_single_turn_chat/README.md) creates a simple RAG chain with PDF files stored in a UC Volume.  
 
 ### PDF Bot w/ multi-turn conversation
 
-[This cookbook](RAG%20Cookbook/4_pdf_rag_with_multi_turn_chat/README.md) creates a multi-turn conversation capable RAG chain with PDF files stored in a UC Volume.  *This cookbook is identical to the single-turn converastion cookbook, except for mintor changes to the chain & configuration to support multi-turn conversations.*
+[This cookbook](RAG%20Cookbook/B_pdf_rag_with_multi_turn_chat/README.md) creates a multi-turn conversation capable RAG chain with PDF files stored in a UC Volume.  *This cookbook is identical to the single-turn converastion cookbook, except for mintor changes to the chain & configuration to support multi-turn conversations.*
 
 
 ### Advanced data pipeline for tuning parsing, chunking, embedding strategy
@@ -80,7 +84,7 @@ Our documentation provides a comprehensive overview of the above functionality:
 
 ### Tutorial 3: Running evaluation on a logged RAG chain
 
-[This tutorial](Tutorials/3_evaluation_of_existing_chains/README.md) walks you through using Evaluation Suite to evaluate the quality of a RAG chain built with RAG Studio.
+[This tutorial](Tutorials/3_evaluation_of_rag_studio_chain/README.md) walks you through using Evaluation Suite to evaluate the quality of a RAG chain built with RAG Studio.
 
 ### Tutorial 4: Running evaluation on a RAG chain or app built outside of RAG Studio
 
