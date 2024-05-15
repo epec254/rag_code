@@ -27,7 +27,7 @@ dbutils.library.restartPython()
 
 # COMMAND ----------
 
-# MAGIC %run ../prpr_shared_funcs
+# MAGIC %run ../../utilities/prpr_shared_funcs
 
 # COMMAND ----------
 

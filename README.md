@@ -57,7 +57,9 @@ Our documentation provides a comprehensive overview of the above functionality:
 
 # Sample code
 
-*Note: While stored in the Git repo as `.py` files, these `.py` files are actually Databricks Notebooks - if you import the file using Databricks, it will render as a Notebook in the Notebook editor.  **To get started, clone this repo as a Git Folder in your Databricks workspace.***
+**To get started, clone this repo as a Git Folder in your Databricks workspace.**
+
+*Note: While stored in the Git repo as `.py` files, these `.py` files are actually Databricks Notebooks - if you import the file using Databricks, it will render as a Notebook in the Notebook editor.*  
 
 ## RAG Cookbook
 
