@@ -13,6 +13,8 @@ import mlflow
 from operator import itemgetter
 from langchain_core.output_parsers import StrOutputParser
 from langchain.schema.runnable import RunnableLambda
+from langchain_community.chat_models import ChatDatabricks
+from langchain_core.prompts import PromptTemplate
 
 # COMMAND ----------
 
@@ -66,7 +68,12 @@ def extract_chat_history(chat_messages_array):
 # The parameters can be loaded from a dict or from a YAML file
 # When logging your model, this configuration can be overridden to experiment with different settings to improve quality
 
-config_dict = {"sample_param": "this is the sample parameter that can be changed! this could be a prompt, a retrieval setting, or ..."}
+config_dict = {
+    "prompt_template": "You are a hello world bot.  Respond with a reply to the user's question that is fun and interesting to the user.  User's question: {question}",
+    "prompt_template_input_vars": ["question"],
+    "model_serving_endpoint": "databricks-dbrx-instruct",
+    "llm_parameters": {"temperature": 0.01, "max_tokens": 500},
+}
 model_config = mlflow.models.ModelConfig(development_config=config_dict)
 
 # Example for loading from a YAML
@@ -77,11 +84,21 @@ model_config = mlflow.models.ModelConfig(development_config=config_dict)
 
 # DBTITLE 1,Hello World Model
 ############
-# Fake model for this hello world example.
+# Prompt Template for generation
 ############
-def fake_model(input):
-    return f"Config: {model_config.get('sample_param')}.  You asked `{input.get('user_query')}`. Conversation history: {input.get('chat_history')}"
+prompt = PromptTemplate(
+    template=model_config.get("prompt_template"),
+    input_variables=model_config.get("prompt_template_input_vars"),
+)
 
+############
+# FM for generation
+# ChatDatabricks accepts any /llm/v1/chat model serving endpoint
+############
+model = ChatDatabricks(
+    endpoint=model_config.get("model_serving_endpoint"),
+    extra_params=model_config.get("llm_parameters"),
+)
 
 ############
 # Parameterized chain example
@@ -89,14 +106,14 @@ def fake_model(input):
 # RAG Studio requires the chain to return a string value.
 chain = (
     {
-        "user_query": itemgetter("messages")
+        "question": itemgetter("messages")
         | RunnableLambda(extract_user_query_string),
         "chat_history": itemgetter("messages") | RunnableLambda(extract_chat_history),
     }
-    | RunnableLambda(fake_model)
+    | prompt
+    | model
     | StrOutputParser()
 )
-
 
 # COMMAND ----------
 
@@ -108,14 +125,6 @@ chain = (
 # This is the same input your chain's REST API will accept.
 question = {
     "messages": [
-        {
-            "role": "user",
-            "content": "question 1",
-        },
-        {
-            "role": "assistant",
-            "content": "answer 1",
-        },
         {
             "role": "user",
             "content": "new question!!",
