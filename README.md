@@ -86,6 +86,10 @@ Our documentation provides a comprehensive overview of the above functionality:
 
 [This tutorial](Tutorials/4_evaluation_of_existing_chains/README.md) walks you through using Evaluation Suite to evaluate the quality of a RAG chain built outside of RAG Studio or already deployed outside of Databricks.
 
+### Tutorial 5: Using External Models or Provisioned Throughput
+
+[This tutorial](Tutorials/5_external_models_and_pt/README.md) walks you through using an External Model (e.g., OpenAI, etc) or Provisioned Throughput model in your RAG Studio chain.
+
 ### Additional tutorials being worked on
 These items are currently covered in the documentation, but will be covered in future hands-on tutorials.  If you need one of these sooner, please contact us at [rag-feedback@databricks.com](mailto:rag-feedback@databricks.com).
 
