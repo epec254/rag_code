@@ -32,7 +32,7 @@ The software and other materials included in this repo ("Copyrighted Materials")
     - [RAG Cookbook](#rag-cookbook)
       - [PDF Bot w/ single-turn conversation](#pdf-bot-w-single-turn-conversation)
       - [PDF Bot w/ multi-turn conversation](#pdf-bot-w-multi-turn-cconversation)
-      - [Advanced data pipeline for tuning parsing, chunking, embedding strategy](#advanced-data-pipeline-for-tuning-parsing-chunking-embedding-strategy)
+      - [Advanced data pipeline for tuning parsing, chunking, embedding strategy](#advanced-data-pipeline-for-tuning-parsing-chunking-embedding-strategies)
     - [How to tutorials](#how-to-tutorials)
       - [Tutorial 1: Creating, logging & deploying chains](#tutorial-1-creating-logging-deploying-chains)
       - [Tutorial 2: Parameterizing chains](#tutorial-2-parameterizing-chains)
@@ -69,8 +69,9 @@ Our documentation provides a comprehensive overview of the above functionality:
 
 [This cookbook](RAG%20Cookbook/B_pdf_rag_with_multi_turn_chat/README.md) creates a multi-turn conversation capable RAG chain with PDF files stored in a UC Volume.  *This cookbook is identical to the single-turn converastion cookbook, except for mintor changes to the chain & configuration to support multi-turn conversations.*
 
+### Advanced data pipeline for tuning parsing, chunking, embedding strategies
 
-### Advanced data pipeline for tuning parsing, chunking, embedding strategy
+[This cookbook](RAG%20Cookbook/C_Alpha_RAG_Data_Pipeline/README.md) helps you try different chunking & parsing strategies, alongside different embedding models.  It provides a RAG data processing pipeline that provides a set of pre-baked chunking & parsing strategies + embedding models, yet is flexible enough to modify the pre-built techniques or add in custom techniques.  
 
 ## How to tutorials
 
