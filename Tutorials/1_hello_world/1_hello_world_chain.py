@@ -16,7 +16,6 @@ from langchain.schema.runnable import RunnableLambda
 from langchain_community.chat_models import ChatDatabricks
 from langchain_core.prompts import PromptTemplate
 
-
 # COMMAND ----------
 
 # MAGIC %md
@@ -71,6 +70,7 @@ prompt = PromptTemplate(
 
 ############
 # FM for generation
+# ChatDatabricks accepts any /llm/v1/chat model serving endpoint
 ############
 model = ChatDatabricks(
     endpoint="databricks-dbrx-instruct",
