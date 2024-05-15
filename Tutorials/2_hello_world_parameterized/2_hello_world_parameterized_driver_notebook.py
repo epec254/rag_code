@@ -111,9 +111,23 @@ print(f"Config notebook path: {chain_yaml_path}")
 # The Dict in `config`, `{"sample_param": "do this thing"}`, mirrors the keys in the 2_hello_world_config.yaml file
 # When we log the models, we will save a reference to the logged model in the `logged_chain_info` key.
 configs_to_test = {
-    "config_1": {"config": {"sample_param": "this could be prompt variant #1"}},
-    "config_2": {"config": {"sample_param": "this is prompt variant #2"}},
-    "config_3": {"config": chain_yaml_path},
+    "config_boring": {
+        "config": {
+            "prompt_template": "You are a hello world bot.  Respond with a reply to the user's question that is boring.  Always include ""I am boring"" in your response.  User's question: {question}",
+            "prompt_template_input_vars": ["question"],
+            "model_serving_endpoint": "databricks-dbrx-instruct",
+            "llm_parameters": {"temperature": 0.01, "max_tokens": 500},
+        }
+    },
+    "config_fun": {
+        "config": {
+            "prompt_template": "You are a hello world bot.  Respond with a reply to the user's question that is fun and interesting to the user.  Always include ""I am super fun"" in your response. User's question: {question}",
+            "prompt_template_input_vars": ["question"],
+            "model_serving_endpoint": "databricks-dbrx-instruct",
+            "llm_parameters": {"temperature": 0.01, "max_tokens": 500},
+        }
+    },
+    "config_yaml": {"config": chain_yaml_path},
 }
 
 # Log each configuration to an MLflow Run
@@ -157,7 +171,7 @@ model_input = {
     "messages": [
         {
             "role": "user",
-            "content": "Hello world!!",
+            "content": "What is Databricks?",
         }
     ]
 }
@@ -179,7 +193,7 @@ for config_name, config_items in configs_to_test.items():
 # COMMAND ----------
 
 # Define winning config 
-winning_config = "config_2"
+winning_config = "config_fun"
 print("Winning config: ", configs_to_test[winning_config])
 
 winning_model_uri = configs_to_test[winning_config]["logged_chain_info"].model_uri
