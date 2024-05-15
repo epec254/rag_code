@@ -13,6 +13,9 @@ import mlflow
 from operator import itemgetter
 from langchain_core.output_parsers import StrOutputParser
 from langchain.schema.runnable import RunnableLambda
+from langchain_community.chat_models import ChatDatabricks
+from langchain_core.prompts import PromptTemplate
+
 
 # COMMAND ----------
 
@@ -59,26 +62,36 @@ def extract_chat_history(chat_messages_array):
 
 # DBTITLE 1,Hello World Chain
 ############
-# Fake model for this hello world example.
+# Prompt Template for generation
 ############
-def fake_model(input):
-    return f"You asked `{input.get('user_query')}`. Conversation history: {input.get('chat_history')}"
+prompt = PromptTemplate(
+    template="You are a hello world bot.  Respond with a reply to the user's question that is fun and interesting to the user.  User's question: {question}",
+    input_variables=["question"],
+)
+
+############
+# FM for generation
+############
+model = ChatDatabricks(
+    endpoint="databricks-dbrx-instruct",
+    extra_params={"temperature": 0.01, "max_tokens": 500},
+)
 
 
 ############
-# Simple chain 
+# Simple chain
 ############
 # RAG Studio requires the chain to return a string value.
 chain = (
     {
-        "user_query": itemgetter("messages")
+        "question": itemgetter("messages")
         | RunnableLambda(extract_user_query_string),
         "chat_history": itemgetter("messages") | RunnableLambda(extract_chat_history),
     }
-    | RunnableLambda(fake_model)
+    | prompt
+    | model
     | StrOutputParser()
 )
-
 
 # COMMAND ----------
 
@@ -90,17 +103,9 @@ chain = (
 # This is the same input your chain's REST API will accept.
 question = {
     "messages": [
-        {
+               {
             "role": "user",
-            "content": "question 1",
-        },
-        {
-            "role": "assistant",
-            "content": "answer 1",
-        },
-        {
-            "role": "user",
-            "content": "new question!!",
+            "content": "what is rag?",
         },
     ]
 }
