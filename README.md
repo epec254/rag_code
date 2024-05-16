@@ -1,120 +1,105 @@
-# RAG Studio Demo Code
+# RAG Studio
 
 Note: This feature is in [Private Preview](https://docs.databricks.com/en/release-notes/release-types.html). To try it, reach out to your Databricks contact or [rag-feedback@databricks.com](mailto:rag-feedback@databricks.com).
 
 The software and other materials included in this repo ("Copyrighted Materials") are protected by US and international copyright laws and are the property of Databricks, Inc. The Copyrighted Materials are not provided under a license for public or third-party use. Accordingly, you may not access, use, copy, modify, publish, and/or distribute the Copyrighted Materials unless you have received prior written authorization or a license from Databricks to do so.
 
-# Documentation
+# Product overview
 
-We suggest following the below tutorials to get started, but you can also refer to our documentation:
-- [RAG Studio Overview Docs.pdf](<RAG Studio Overview Docs.pdf>)
-- [Evaluation Suite Doc.pdf](<Evaluation Suite Doc.pdf>)
-- [MLflow Tracing Docs.pdf](<MLflow Tracing Docs.pdf>)
+**RAG Studio:** The set of upgraded Mosaic AI platform capabilities for building high-quality Retrieval Augmented Generation (RAG) applications:
+  - **MLflow:** Support for logging, parameterizing, and tracing Chains that are unified between development & production.  Chains can be logged as code vs. pickled.
+  - **Model Serving:** Support for hosting Chains e.g., token streaming, automated authentication of Databricks services used in your chain, feedback API and a simplified chain deployment API
+  - **RAG Cookbook:** Sample code & how-to guide offering an opinionated end-to-end workflow for building RAG apps [this repo]
+  - *[Future release] Lakehouse Monitoring: Capabilities for monitoring your apps once in production*
 
-# Tutorials
+**Evaluation Suite:** Built-for-purpose tools to evaluate Generative AI App quality, starting with RAG apps:
+  - **Evaluation Harness:** evaluate(...) command that runs the evaluation
+  - **Review App:** UI tool for collecting stakeholder feedback & building evaluation sets
+  - **Databricks LLM Judges:** Databricks' proprietary AI-assisted judges for evaluating RAG quality.  Can be tuned with customer provided examples to increase agreement with human raters.
+  - **Metrics:** A set of Databricks-defined metrics for measuring quality/cost/latency of your chain.  Most metrics are defined using the output of the Databricks LLM judges.
+  - **Customer-defined LLM Judges:** Databricks framework to quickly define custom judges that evaluate business / use-case specific aspects of quality
+  - *[Future release] Custom metrics: Provide a user-defined function to run and record its value as an evaluation metric.*
 
-**Important: Before you start, open the [`wheel_installer`](M1_Sample_Code/wheel_installer.py) notebook and replace the `PUT_*` placeholders with the URLs you recieved from your Databricks representative.**
+# Release notes & upcoming releases
 
-```
-%pip install --quiet "PUT_RAG_EVAL_SUITE_WHEEL_HERE"
-%pip install --quiet "PUT_RAG_STUDIO_WHEEL_HERE"
+[databricks-rag-studio v0.2.0 release notes & upcoming releases](<Documentation/RAG Studio - M2 release notes & upcoming releases.pdf>)
 
-%pip install opentelemetry-api opentelemetry-sdk databricks-vectorsearch tiktoken langchain langchainhub faiss-cpu -U -q
-%pip uninstall mlflow mlflow-skinny -y # uninstall existing mlflow to avoid installation issues
-%pip install "PUT_MLFLOW_WHEEL_HERE" -U
-%pip install "PUT_MLFLOW_SKINNY_WHEEL_HERE" -U
-```
+# Table of contents
 
-*Note: While stored in the Git repo as `.py` files, these `.py` files are actually Databricks Notebooks - if you import the file using Databricks, it will render as a Notebook in the Notebook editor.  We suggest adding a Git Folder in your Databricks workspace based on a forked copy of this repo.*
+1. [Product documentation](#product-documentation)
+2. [Known limitations](#known-limitations)
+3. [Sample code](#sample-code)
+    - [RAG Cookbook](#rag-cookbook)
+      - [PDF Bot w/ single-turn conversation](#pdf-bot-w-single-turn-conversation)
+      - [PDF Bot w/ multi-turn conversation](#pdf-bot-w-multi-turn-cconversation)
+      - [Advanced data pipeline for tuning parsing, chunking, embedding strategy](#advanced-data-pipeline-for-tuning-parsing-chunking-embedding-strategies)
+    - [How to tutorials](#how-to-tutorials)
+      - [Tutorial 1: Creating, logging & deploying chains](#tutorial-1-creating-logging-deploying-chains)
+      - [Tutorial 2: Parameterizing chains](#tutorial-2-parameterizing-chains)
+      - [Tutorial 3: Running evaluation on a logged RAG chain](#tutorial-3-running-evaluation-on-a-logged-rag-chain)
+      - [Tutorial 4: Running evaluation on a RAG chain or app built outside of RAG Studio](#tutorial-4-running-evaluation-on-a-RAG-chain-or-app-built-outside-of-rag-studio)
 
-## Tutorial 1: Hello world
+# Product documentation
 
-### Creating a chain
-First, let's create the most minimal chain in RAG Studio.  This tutorial will familarize you with the basics of the development workflow and the chain input/output schema.
+Our documentation provides a comprehensive overview of the above functionality:
+- [RAG Studio & Evaluation Suite - Documentation + Release Notes](<Documentation/RAG Studio & Evaluation Suite - Customer Documentation + Release Notes.pdf>)
+- [MLflow Tracing](<Documentation/MLflow Tracing.pdf>)
 
-When using RAG Studio, you create your chain code using LangChain inside a Notebook.  Open the [`hello_world_chain`](M1_Sample_Code/1_hello_world/1_hello_world_chain.py) Notebook, review the commented code, and try running it.
+# Known limitations
 
-Note: If you need support for Python based chains, please reach out to our team.
+- Only tested on Databricks Runtime 15.0 and 14.3 Single User clusters.  They have not been tested on MLR or Shared Clusters.
+- Only supports chains using the Langchain framework. Generic Python functionality is coming soon.
+- Chains that need custom credentials for external services e.g., directly calling 3rd party APIs require these credentials to be manually configured in the model serving UI after calling `deploy_model(...)`
+- Support for custom Python library dependencies and versions e.g., `pip_requirements` in `mlflow.langchain.log_model(...)` has not been tested extensively.
+- Serialization-based MLFlow logging has not been tested with RAG Studio
+- Code-based MLflow logging captures all loaded Python packages in the Driver Notebook as the `pip_requirements` for the MLflow model - if you need to add or remove requirements, pass a custom `pip_requirements` array that includes `"databricks-rag-studio==0.2.0"`.
+- Some parts of the product documentation are still work-in-progress
 
-### Logging & deploying a chain
+# Sample code
 
-Now, let's log this chain to MLflow and deploy it to the Review App.
+**To get started, clone this repo as a Git Folder in your Databricks workspace.**
 
-When using RAG Studio, you create, evaluate, and deploy new versions of your chain using a "Driver" notebook.  For now, let's just log and deploy the chain.  Open the [`1_hello_world_driver_notebook`](M1_Sample_Code/1_hello_world/1_hello_world_driver_notebook.py) Notebook, review the code, and try running it.
+*Note: While stored in the Git repo as `.py` files, these `.py` files are actually Databricks Notebooks - if you import the file using Databricks, it will render as a Notebook in the Notebook editor.*  
 
-If successful, you will be able to chat with your hello world chain in the Review App.
+## RAG Cookbook
 
-## Tutorial 2: Hello World w/ parameterization
+### PDF Bot w/ single-turn conversation
 
-### Parameterizing a chain
+[This cookbook](RAG%20Cookbook/A_pdf_rag_with_single_turn_chat/README.md) creates a simple RAG chain with PDF files stored in a UC Volume.  
 
-RAG Studio supports parameterizing your chains - this allows you to quickly iterate on quality related parameters (such as the prompt or retriever configuruation) while holding the chain's code constant.
+### PDF Bot w/ multi-turn conversation
 
-Parameterization is based on a YAML file.  Open [`2_hello_world_config.yaml`](M1_Sample_Code/2_hello_world_parameterized/2_hello_world_config.yaml) for an example of the configuration file - the structure of the YAML is up to you, although in the next tutorial, you will see our suggested structure.
+[This cookbook](RAG%20Cookbook/B_pdf_rag_with_multi_turn_chat/README.md) creates a multi-turn conversation capable RAG chain with PDF files stored in a UC Volume.  *This cookbook is identical to the single-turn converastion cookbook, except for minor changes to the chain & configuration to support multi-turn conversations.*
 
-Open [`2_hello_world_parameterized_chain`](M1_Sample_Code/2_hello_world_parameterized/2_hello_world_parameterized_chain.py) and [`2_hello_world_parameterized_driver_notebook`](M1_Sample_Code/2_hello_world_parameterized/2_hello_world_parameterized_driver_notebook.py) to see how this works in practice.
+### Advanced data pipeline for tuning parsing, chunking, embedding strategies
 
+[This cookbook](RAG%20Cookbook/C_Alpha_RAG_Data_Pipeline/README.md) helps you try different chunking & parsing strategies, alongside different embedding models.  It provides a RAG data processing pipeline that provides a set of pre-baked chunking & parsing strategies + embedding models, yet is flexible enough to modify the pre-built techniques or add in custom techniques.  
 
-How to access configuration settings:
-```
-############
-# Get the configuration YAML
-############
-rag_config = RagConfig("1_hello_world_config.yaml")
-rag_config.get('sample_param')
-```
+## How to tutorials
 
-## Tutorial 3: Creating & evaluating a RAG chain
+### Tutorial 1: Creating, logging & deploying chains
 
-NOw, we will create a simple RAG chain with PDF files from a UC Volume.  
+[This tutorial](Tutorials/1_hello_world/README.md) walks you through how to create, log and deploy a chain.  The outcome is a user-facing Web UI for chatting with the chain & providing feedback (the Review App) and a REST API for integrating the chain into your user-facing application.
 
-### Create a UC Volume with PDF files
+### Tutorial 2: Parameterizing chains
 
-Create a UC Volume and load PDF files.  You can use the PDFs from the directory [`sample_pdfs`](M1_Sample_Code/sample_pdfs/) to get started quickly - these PDFs are a few recent research papers from Matei's lab.
+[This tutorial](Tutorials/2_hello_world_parameterized/README.md) walks you through RAG Studio's support for parameterizing chains.  Parameterization allows you to quickly iterate on quality related parameters (such as the prompt or retriever configuruation) while holding the chain's code constant.
 
-### Create a Vector Index
+### Tutorial 3: Running evaluation on a logged RAG chain
 
-Open and follow the steps in the notebook [`3_load_pdf_to_vector_index`](M1_Sample_Code/3_pdf_rag/3_load_pdf_to_vector_index.py) to load PDF files from the UC Volume to a Vector Index.  The sample notebook uses the BGE embedding model hosted on FMAPI, but later tutorials show you how to use OpenAI's embedding models.
+[This tutorial](Tutorials/3_evaluation_of_rag_studio_chain/README.md) walks you through using Evaluation Suite to evaluate the quality of a RAG chain built with RAG Studio.
 
-### Prototype a RAG Chain
+### Tutorial 4: Running evaluation on a RAG chain or app built outside of RAG Studio
 
-1. Take the output from the last cell in the [`3_load_pdf_to_vector_index`](M1_Sample_Code/3_pdf_rag/3_load_pdf_to_vector_index.py) notebook and overwrite the first few lines of the [`3_rag_chain_config.yaml`](M1_Sample_Code/3_pdf_rag/3_rag_chain_config.yaml) configuration so your chain can use the vector index you just created.
+[This tutorial](Tutorials/4_evaluation_of_existing_chains/README.md) walks you through using Evaluation Suite to evaluate the quality of a RAG chain built outside of RAG Studio or already deployed outside of Databricks.
 
-2. Open the notebook [`3_rag_chain`](M1_Sample_Code/3_pdf_rag/3_rag_chain.py) and run the code locally to test the chain.  This chain uses the `Databricks-DBRX-Instruct` model hosted on FMAPI.
+### Tutorial 5: Using External Models or Provisioned Throughput
 
-### Log & evaluate a RAG Chain
+[This tutorial](Tutorials/5_external_models_and_pt/README.md) walks you through using an External Model (e.g., OpenAI, etc) or Provisioned Throughput model in your RAG Studio chain.
 
-To understand the evaluation metrics and LLM judges that are used to evaluate your chain, refer to the [metrics overview](metrics.md).
+### Additional tutorials being worked on
+These items are currently covered in the documentation, but will be covered in future hands-on tutorials.  If you need one of these sooner, please contact us at [rag-feedback@databricks.com](mailto:rag-feedback@databricks.com).
 
-1. Open the notebook [`3_rag_chain_driver_notebook`](M1_Sample_Code/3_pdf_rag/3_rag_chain_driver_notebook.py) to log, evaluate, and deploy the chain.
-2. Share the deployed Review App with your users to interact with the chain and provide feedback.
-
-# Advanced examples & tutorials
-
-## 4. Multi-turn conversation
-
-The chain [`4_rag_chain_w_conversation_history`](M1_Sample_Code/4_rag_chain_w_conversation_history/4_rag_chain_w_conversation_history.py) and [`4_rag_chain_w_conversation_history_config.yaml`](M1_Sample_Code/4_rag_chain_w_conversation_history/4_rag_chain_w_conversation_history_config.yaml) is an example showing you how to enable multi-turn conversation with a query re-writer prompt.  The accompanying driver notebook [`4_rag_chain_w_conversation_history_driver_notebook`](M1_Sample_Code/4_rag_chain_w_conversation_history/4_rag_chain_w_conversation_history_driver_notebook.py) follows the same workflow as the driver notebook from [Tutorial 3](M1_Sample_Code/3_pdf_rag) to log and evaluate this chain.
-
-## 5. Advanced Evaluation
-### 5a. Using RAG Evaluation Suite without RAG Studio
-
-If you have a RAG chain that was deployed outside of RAG Studio, you can still use the Evaluation Suite to assess the chain's quality.  See [`5_evaluation_without_rag_studio`](M1_Sample_Code/5_evaluation_without_rag_studio.py) to see how to do this.
-
-### 5b. Improving LLM judge accuracy with few-shot examples
-
-To improve the accuracy of the Databricks judges, you can provide few-shot examples of "good" and "bad" answers for each LLM judge.  Databricks strongly reccomends providing at least 2 postive and 2 negative examples per judge to improve the accuracy.  See the bottom of the notebook [`5_evaluation_without_rag_studio`](M1_Sample_Code/5_evaluation_without_rag_studio.py) for how to do this.  
-
-*Note: Even though this example configuration is included in the non-RAG Studio evaluation example, you can use the example configuration with the RAG Studio evaluation tutorials above.*
-
-## 6. Review user feedback from the Review App
-
-You can use the human feedback collected using the Review App to:
-- Determine where you chain is working well and/or not working
-- Curate an evaluation set for offline evaluation
-- Fine tune a generation or embedding model to improve quality
-
-All deployed models from RAG Studio automatically collect trace logs and human feedback to an Inference Table.  Use the notebook [`6_export_inference_table_to_logs`](M1_Sample_Code/6_export_inference_table_to_logs.py) to turn this Inference Table into a well-schemed `request_log` (with traces) and `assessment_log` with human feedback.
-
-## 7. Request expert stakeholder input on logs
-
-If you are unsure if a request/response from your deployed RAG Chain is correct or you got negative feedback on the request/response but are unsure why, you can use the Review App to request human feedback on requests from a deployed RAG chain. 
+- Improving LLM judge agreement with human raters using few-shot examples
+- Curating an Evaluation Set using feedback from the Review App
+- Measuring use-case specific aspects of quality with customer-defined LLM judges
