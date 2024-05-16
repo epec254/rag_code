@@ -126,6 +126,46 @@ with mlflow.start_run(run_name="level_C_data"):
     model="runs:/a828658a8c9f46eeb7ef346e65228394/chain", 
     model_type="databricks-rag")
 ```
+
+To include results from custom LLM judges alongside the builtin metric results,
+create an judge using `mlflow.metrics.genai.make_genai_metric_from_prompt`.
+The prompt used in a custom judge may include any of the following variables:
+- `request`
+- `response`
+- `retrieved_context`
+- `expected_response`.
+
+The metric's assessment type must be specified as one of `ANSWER` or `RETRIEVAL`.
+The threshold past which the metric is rated affirmatively can optionally be specified.
+
+```
+import pandas as pd
+import mlflow
+
+from mlflow.metrics.genai import make_genai_metric_from_prompt
+
+# Define a custom LLM judge
+prompt = "Your must assess the ease of understanding of a bot's responses. " \
+         "The bot was asked: '{request}'. The bot responded: '{response}'. "
+
+
+custom_metric = make_genai_metric_from_prompt(
+  name="my_custom_metric",
+  judge_prompt=prompt,
+  model="endpoints:/llm-endpoint",
+  greater_is_better=True,
+  metric_metadata={"assessment_type": "ANSWER", "score_threshold": 4},
+)   
+
+with mlflow.start_run(run_name="level_C_data"):
+  evaluation_results = mlflow.evaluate(
+    data=level_C_data_df,
+    model="runs:/a828658a8c9f46eeb7ef346e65228394/chain", 
+    model_type="databricks-rag",
+    extra_metrics=[custom_metric]
+  )
+
+```
 #### Step 3: Use the data & metrics
 
 Evaluation Harness produces several outputs:
