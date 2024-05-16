@@ -69,7 +69,7 @@ Our documentation provides a comprehensive overview of the above functionality:
 
 ### PDF Bot w/ multi-turn conversation
 
-[This cookbook](RAG%20Cookbook/B_pdf_rag_with_multi_turn_chat/README.md) creates a multi-turn conversation capable RAG chain with PDF files stored in a UC Volume.  *This cookbook is identical to the single-turn converastion cookbook, except for mintor changes to the chain & configuration to support multi-turn conversations.*
+[This cookbook](RAG%20Cookbook/B_pdf_rag_with_multi_turn_chat/README.md) creates a multi-turn conversation capable RAG chain with PDF files stored in a UC Volume.  *This cookbook is identical to the single-turn converastion cookbook, except for minor changes to the chain & configuration to support multi-turn conversations.*
 
 ### Advanced data pipeline for tuning parsing, chunking, embedding strategies
 
