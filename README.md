@@ -22,7 +22,7 @@ The software and other materials included in this repo ("Copyrighted Materials")
 
 # Release notes & upcoming releases
 
-[M2 release notes & upcoming releases](<Documentation/RAG Studio - M2 release notes & upcoming releases.pdf>)
+[databricks-rag-studio v0.2.0 release notes & upcoming releases](<Documentation/RAG Studio - M2 release notes & upcoming releases.pdf>)
 
 # Table of contents
 
