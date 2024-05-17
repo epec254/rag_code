@@ -126,6 +126,46 @@ with mlflow.start_run(run_name="level_C_data"):
     model="runs:/a828658a8c9f46eeb7ef346e65228394/chain", 
     model_type="databricks-rag")
 ```
+To include results from custom LLM judges alongside the builtin metric results,
+specify a judge using the config string, illustrated below.
+The prompt used in a custom judge may include any of the following variables:
+- `request`
+- `response`
+- `retrieved_context`
+- `expected_response`.
+
+The metric's assessment type must be specified as one of `ANSWER` or `RETRIEVAL`.
+
+```
+import mlflow
+
+config_str = """
+builtin_assessments:
+  - harmfulness
+  - groundedness
+  - correctness
+  - relevance_to_query
+  - chunk_relevance
+assessment_judges:
+  - judge_name: my_judge
+    endpoint_name: endpoints:/databricks-dbrx-instruct
+    assessments:
+      - name: has_pii
+        type: RETRIEVAL
+        definition: "Your task is to determine whether the retrieved content has any PII information. This was the content: '{retrieved_context}'"
+      - name: professional
+        type: ANSWER
+        definition: "Your task is to determine if the response has a professional tone. The response is: '{response}'"
+"""
+
+with mlflow.start_run(run_name="level_C_data"):
+  evaluation_results = mlflow.evaluate(
+    data=level_C_data_df,
+    model="runs:/a828658a8c9f46eeb7ef346e65228394/chain",
+    model_type="databricks-rag",
+    evaluator_config={"databricks-rag": {"config_yml": config_str}}
+  )
+```
 #### Step 3: Use the data & metrics
 
 Evaluation Harness produces several outputs:
