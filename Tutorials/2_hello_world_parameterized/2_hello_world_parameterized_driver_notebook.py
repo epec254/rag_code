@@ -97,7 +97,7 @@ print(f"Config notebook path: {chain_yaml_path}")
 # MAGIC
 # MAGIC * We log the same chain, but with different configurations. This simulates iterating over different chain parameters and logging the resulting 
 # MAGIC chains
-# MAGIC * In this instance we log two different chains, with two different configs YAMLs to two separate MLflow runs. This will subsequently allow us to load these distinct chains from their respective MLflow runs and evaluate them.
+# MAGIC * In this instance we log three different chains, with three different configs YAMLs to three separate MLflow runs. This will subsequently allow us to load these distinct chains from their respective MLflow runs and evaluate them.
 # MAGIC
 # MAGIC **NOTE:** The chains have not been deployed at this point. We are simply logging the chain artifacts to MLflow.
 
@@ -157,13 +157,13 @@ for config_name, config_details in configs_to_test.items():
 # MAGIC ## Evaluate the chains
 # MAGIC
 # MAGIC * Within a notebook setting, we can load in the separate chains, and query them with `chain.invoke()`
-# MAGIC * Here we iteratively load in the two separate logged chains, and query them with `model_input`
+# MAGIC * Here we iteratively load in the three separate logged chains, and query them with `model_input`
 # MAGIC * This is a simplified approach for demonstration. In a practical setting we recommend using `evaluate()` to more robustly evaluate the chain
 
 # COMMAND ----------
 
 ############
-# Now, let's test both models locally
+# Now, let's test all the models locally
 # In the actual usage, you would use rag.evaluate(...) to run LLM judge and evaluate each chain's quality/cost/latency.
 ############
 
