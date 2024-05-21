@@ -1,15 +1,8 @@
 # Tutorial 1: Creating, logging & deploying chains
 
-Logging a chain is the basis of your development process.  Logging captures a "point in time" of the chain's code and configuration so you can evaluate the quality of those settings.  With RAG Studio, there are 2 ways you can create & log a chain, both based on MLflow:
+Logging a chain is the basis of your development process.  Logging captures a "point in time" of the chain's code and configuration so you can evaluate the quality of those settings.  For developing RAG applications, Databricks suggests code-based logging as apposed to serialization based logging.  For more information about the pros and cons of each type of logging, please see the [appendix](#appendix). 
 
-|Approach|Description|Pros|Cons|
-|-------|-------|-------|-------|
-|**Serialization-based MLflow logging**|The chain's code and current state in the Python environment is [serialized](https://mlflow.org/docs/latest/traditional-ml/creating-custom-pyfunc/part1-named-flavors.html) to disk, often using libraries such as `pickle` or `joblib`.  The Python environment (e.g., pip packages) is captured as a list of packages.  <br/><br/>When the chain is deployed, the Python environment is restored, and the serialized object is loaded into memory so it can be invoked when the endpoint is called.|+ `log_model(...)` can be called from the same notebook as where the model is defined| - Original code is not available<br/>- All used libraries/objects must support serialization. <br/> - Requires translating the chain's inputs & outputs to/from a Pandas DataFrame when calling the logged or deployed MLflow model.|
-|**Code-based MLflow logging**| The chain's code is captured as a Python file.  The Python environment (e.g., pip packages) is captured as a list of packages.  <br/><br/>When the chain is deployed, the Python environment is restored, and the chain's code is executed to load the chain into memory so it can be invoked when the endpoint is called. | + Overcomes inherent limitations of serialization - it is not supported by many popular GenAI libraries. <br/> + Saves a copy of the original code for later reference <br/>+ No need to restructure your code into a single object that can be serialized. <br/> + If using PyFunc, does NOT translating the chain's inputs & outputs to/from a Pandas DataFrame when calling the logged or deployed MLflow model. | - `log_model(...)` must be called from a *different* notebook than the chain's code (called a Driver Notebook).<br/>- *(current limitation)* The Python environment of the Driver Notebook is captured when logging - if this is different than the environment required by the chain's code, you must manually specicify the Python packages when logging  |
-
-For developing RAG applications, Databricks suggests approach (2) code-based logging.  RAG Studio's documentation assumes you are using code-based logging & has not been tested with serialization-based logging.
-
-#### **1. Creating a chain**
+#### Step 1. Creating a chain
 
 In RAG Studio, the chain's code, which we colloquially refer to as `chain.py`, is your development space - you can use any package, library, or technique.  The *only* requirement is that your chain comply with a given input / output schema.  Why?  To use your chain in the Review App & to evaluate your chain with Evaluation Suite, we must know how to send your chain user queries & how to find the chain's response back to the user.
 
@@ -53,7 +46,7 @@ chain = (
 )
 ```
 -->
-#### 2. Logging the chain
+#### Step 2. Logging the chain
 
 When using code-based MLflow logging, you log, evaulate, and deploy new versions of your `chain.py` using a seperate notebook, which we call the Driver Notebook.  
 
@@ -155,3 +148,14 @@ parse_deployment_info(deployment)
       3. Formatted feedback, as provided in the Review App or via Feedback API, for each request `{catalog_name}.{schema_name}.rag_studio_{model_name}_payload_assessment_logs`
 
 **Note:** It can take up to 15 minutes to deploy.  Raw JSON payloads take 10 - 30 minutes to arrive, and the formatted logs are processed from the raw payloads every ~hour.
+
+#### Appendix
+
+There are 2 ways you can create & log a chain, both based on MLflow:
+
+|Approach|Description|Pros|Cons|
+|-------|-------|-------|-------|
+|**Serialization-based MLflow logging**|The chain's code and current state in the Python environment is [serialized](https://mlflow.org/docs/latest/traditional-ml/creating-custom-pyfunc/part1-named-flavors.html) to disk, often using libraries such as `pickle` or `joblib`. <br/><br/>When the chain is deployed, the Python environment is restored, and the serialized object is loaded into memory so it can be invoked when the endpoint is called.|+ `log_model(...)` can be called from the same notebook as where the model is defined| - Original code is not available<br/>- All used libraries/objects must support serialization. <br/> - Requires translating the chain's inputs & outputs to/from a Pandas DataFrame when calling the logged or deployed MLflow model.|
+|**Code-based MLflow logging**| The chain's code is captured as a Python file.  The Python environment (e.g., pip packages) is captured as a list of packages.  <br/><br/>When the chain is deployed, the Python environment is restored, and the chain's code is executed to load the chain into memory so it can be invoked when the endpoint is called. | + Overcomes inherent limitations of serialization - it is not supported by many popular GenAI libraries. <br/> + Saves a copy of the original code for later reference <br/>+ No need to restructure your code into a single object that can be serialized. <br/> + If using PyFunc, does NOT translating the chain's inputs & outputs to/from a Pandas DataFrame when calling the logged or deployed MLflow model. | - `log_model(...)` must be called from a *different* notebook than the chain's code (called a Driver Notebook).<br/>- *(current limitation)* The Python environment of the Driver Notebook is captured when logging - if this is different than the environment required by the chain's code, you must manually specicify the Python packages when logging  |
+
+For developing RAG applications, Databricks suggests approach (2) code-based logging.  RAG Studio's documentation assumes you are using code-based logging & has not been tested with serialization-based logging.
