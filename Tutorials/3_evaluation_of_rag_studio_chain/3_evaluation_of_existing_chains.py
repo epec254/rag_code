@@ -26,7 +26,7 @@
 # COMMAND ----------
 
 # DBTITLE 1,Install Evaluation Suite
-# MAGIC %pip install databricks-rag-studio
+# MAGIC %pip install databricks-rag-studio mlflow>=2.13
 
 # COMMAND ----------
 
