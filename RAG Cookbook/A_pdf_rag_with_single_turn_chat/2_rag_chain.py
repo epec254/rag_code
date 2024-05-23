@@ -5,7 +5,7 @@
 # COMMAND ----------
 
 # DBTITLE 1,Databricks Rag Studio Installer
-# MAGIC %pip install databricks-rag-studio "mlflow@git+https://github.com/mlflow/mlflow.git@databricks-rag-studio" databricks-vectorsearch
+# MAGIC %pip install databricks-rag-studio databricks-vectorsearch
 
 # COMMAND ----------
 
