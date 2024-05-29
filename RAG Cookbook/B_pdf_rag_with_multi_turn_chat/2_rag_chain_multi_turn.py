@@ -15,14 +15,17 @@ dbutils.library.restartPython()
 # COMMAND ----------
 
 # DBTITLE 1,Import packages
+from databricks import rag
 from operator import itemgetter
 import mlflow
 import os
-from databricks import rag
+
 from databricks.vector_search.client import VectorSearchClient
-from langchain.schema.runnable import RunnableLambda
+
 from langchain_community.chat_models import ChatDatabricks
 from langchain_community.vectorstores import DatabricksVectorSearch
+
+from langchain_core.runnables import RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
