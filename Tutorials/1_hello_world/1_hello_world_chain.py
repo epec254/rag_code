@@ -1,6 +1,6 @@
 # Databricks notebook source
 # DBTITLE 1,Install RAG Studio packages
-# MAGIC %pip install databricks-rag-studio mlflow>=2.13
+# MAGIC %pip install databricks-rag-studio 'mlflow>=2.13'
 
 # COMMAND ----------
 
