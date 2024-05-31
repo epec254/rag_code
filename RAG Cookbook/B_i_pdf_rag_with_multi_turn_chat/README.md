@@ -1,6 +1,6 @@
 ## Cookbook: PDF Bot w/ multi-turn conversation
 
-NOTE: This cookbook is identical to the single-turn converastion cookbook, except that the chain & configuration are changed to support multi-turn conversations.
+NOTE: This cookbook is identical to the multi-turn conversation cookbook, except that a [FlashRank reranker](https://python.langchain.com/v0.1/docs/integrations/retrievers/flashrank-reranker/) step is added to the retriever.
 
 This cookbook creates a multi-turn conversation capable RAG chain with PDF files stored in a UC Volume.  
 
