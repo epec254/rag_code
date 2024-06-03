@@ -1,34 +1,34 @@
 # Databricks notebook source
 # MAGIC %md
 # MAGIC **NOTE:** You will need to first set up a [Vector Search endpoint](https://docs.databricks.com/en/generative-ai/create-query-vector-search.html#create-a-vector-search-endpoint) and [Vector Search index](https://docs.databricks.com/en/generative-ai/create-query-vector-search.html#create-a-vector-search-index) in order to run this chain. Please see [1_load_pdf_to_vector_index]($1_load_pdf_to_vector_index) to set up this infrastucture.
+# MAGIC
+# MAGIC * This notebook contains the same chain as [B_pdf_rag_with_multi_turn_chat]($../B_pdf_rag_with_multi_turn_chat), aside from adding in a reranking step to the retrieval component. This example leverages the [FlashRank reranker](https://python.langchain.com/v0.1/docs/integrations/retrievers/flashrank-reranker/) in Langchain.
 
 # COMMAND ----------
 
 # DBTITLE 1,Databricks Rag Studio Installer
-# MAGIC %pip install databricks-rag-studio databricks-vectorsearch 'mlflow>=2.13' langchain==0.2.0 langchain_core==0.2.0 langchain_community==0.2.0
+# MAGIC %pip install databricks-rag-studio databricks-vectorsearch mlflow>=2.13 langchain==0.1.12 flashrank==0.2.4 sqlalchemy==2.0.30
 
 # COMMAND ----------
 
 # Before logging this chain using the driver notebook, you need to comment out this line.
-dbutils.library.restartPython() 
+# dbutils.library.restartPython() 
 
 # COMMAND ----------
 
-# DBTITLE 1,Import packages
-from databricks import rag
 from operator import itemgetter
 import mlflow
 import os
-
+from databricks import rag
 from databricks.vector_search.client import VectorSearchClient
-
+from langchain.schema.runnable import RunnableLambda
 from langchain_community.chat_models import ChatDatabricks
 from langchain_community.vectorstores import DatabricksVectorSearch
-
-from langchain_core.runnables import RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
+from langchain.retrievers import ContextualCompressionRetriever
+from langchain.retrievers.document_compressors import FlashrankRerank
 
 # COMMAND ----------
 
@@ -66,7 +66,6 @@ def extract_chat_history(chat_messages_array):
 
 # COMMAND ----------
 
-
 ############
 # Get the configuration YAML
 ############
@@ -83,9 +82,9 @@ vs_index = vs_client.get_index(
 vector_search_schema = model_config.get("vector_search_schema")
 
 ############
-# Turn the Vector Search index into a LangChain retriever
+# Turn the Vector Search index into a LangChain retriever with reranking
 ############
-vector_search_as_retriever = DatabricksVectorSearch(
+base_retriever = DatabricksVectorSearch(
     vs_index,
     text_column=vector_search_schema.get("chunk_text"),
     columns=[
@@ -94,6 +93,11 @@ vector_search_as_retriever = DatabricksVectorSearch(
         vector_search_schema.get("document_source"),
     ],
 ).as_retriever(search_kwargs=model_config.get("vector_search_parameters"))
+# FlashRank reranker - https://python.langchain.com/v0.1/docs/integrations/retrievers/flashrank-reranker/
+compressor = FlashrankRerank()
+vector_search_as_retriever = ContextualCompressionRetriever(
+    base_compressor=compressor, base_retriever=base_retriever
+)
 
 ############
 # Required to:
@@ -148,19 +152,14 @@ chain = (
     {
         "question": itemgetter("messages") | RunnableLambda(extract_user_query_string),
         "chat_history": itemgetter("messages") | RunnableLambda(extract_chat_history),
-        # "context": itemgetter("messages")
-        # | RunnableLambda(extract_user_query_string)
-        # | vector_search_as_retriever
-        # | RunnableLambda(format_context),
     }
       | RunnablePassthrough()
     | {
             "context": query_rewrite_prompt
             | model
             | StrOutputParser()
-            | vector_search_as_retriever
+            | vector_search_as_retriever    # Vec Search with reranker
             | RunnableLambda(format_context),
-            # "chat_history": itemgetter("chat_history"),
             "question": itemgetter("question"),
         }
     | prompt

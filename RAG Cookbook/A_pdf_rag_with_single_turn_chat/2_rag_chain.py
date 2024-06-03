@@ -5,7 +5,7 @@
 # COMMAND ----------
 
 # DBTITLE 1,Databricks Rag Studio Installer
-# MAGIC %pip install databricks-rag-studio databricks-vectorsearch mlflow>=2.13 langchain==0.2.0 langchain_core==0.2.0 langchain_community==0.2.0
+# MAGIC %pip install databricks-rag-studio databricks-vectorsearch 'mlflow>=2.13' langchain==0.2.0 langchain_core==0.2.0 langchain_community==0.2.0
 
 # COMMAND ----------
 
