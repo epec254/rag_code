@@ -146,7 +146,6 @@ You can also specify whether higher or lower values are better for the metric us
 This can be useful, for example, when defining a metric that measures the harmfulness of a response.
 
 ```
-import pandas as pd
 import mlflow
 
 from mlflow.metrics.genai import make_genai_metric_from_prompt
