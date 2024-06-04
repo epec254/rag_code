@@ -137,7 +137,6 @@ The prompt used in a custom judge may include any of the following variables:
 
 The metric's assessment type must be specified as one of `ANSWER` or `RETRIEVAL`.
 
-<<<<<<< HEAD
 MLflow's `make_genai_metric_from_prompt` returns metrics that use integer scores from 1-5,
 where 5 reflects an input that best matches the supplied criteria.
 The score threshold for rating the metric True or False can optionally be specified.
