@@ -19,7 +19,7 @@
 # COMMAND ----------
 
 # DBTITLE 1,Databricks RAG Studio Installer
-# MAGIC %pip install databricks-rag-studio "mlflow@git+https://github.com/mlflow/mlflow.git@databricks-rag-studio"
+# MAGIC %pip install databricks-rag-studio 'mlflow>=2.13'
 
 # COMMAND ----------
 

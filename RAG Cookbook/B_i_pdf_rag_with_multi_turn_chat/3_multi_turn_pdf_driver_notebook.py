@@ -20,8 +20,7 @@
 
 # COMMAND ----------
 
-# DBTITLE 1,Databricks RAG Studio Installer
-# MAGIC %pip install databricks-rag-studio 'mlflow>=2.13'
+# MAGIC %pip install databricks-rag-studio databricks-vectorsearch mlflow>=2.13 langchain==0.1.12 flashrank==0.2.4 sqlalchemy==2.0.30
 
 # COMMAND ----------
 
@@ -42,6 +41,7 @@ import os
 import mlflow
 from databricks import rag_studio
 import pandas as pd
+
 # Use Unity Catalog as the model registry
 mlflow.set_registry_uri('databricks-uc')
 
@@ -55,7 +55,7 @@ mlflow.set_registry_uri('databricks-uc')
 # Create widgets for user input
 dbutils.widgets.text("uc_catalog", "", "Unity Catalog")
 dbutils.widgets.text("uc_schema", "", "Unity Catalog Schema")
-dbutils.widgets.text("model_name", "pdf_rag_bot_multi_turn", "Model Name")
+dbutils.widgets.text("model_name", "pdf_rag_bot_multi_turn_reranker", "Model Name")
 
 # Retrieve the values from the widgets
 uc_catalog = dbutils.widgets.get("uc_catalog")
@@ -308,36 +308,17 @@ print(f"Chain notebook path: {chain_notebook_path}")
 # COMMAND ----------
 
 # DBTITLE 1,Log the model
-# Update this config from the output of the last cell of `1_load_pdf_vector_index`
-# You can simply copy / paste the JSON that dumped from the last cell and replace the entire `baseline_config`.
-baseline_config = {
-        "vector_search_endpoint_name": "REPLACE ME WITH VALUE FROM 1_load_pdf_vector_index",
-    "vector_search_index": "REPLACE ME WITH VALUE FROM 1_load_pdf_vector_index",
-    "vector_search_schema": {
-        "primary_key": "chunk_id",
-        "chunk_text": "chunked_text",
-        "document_source": "doc_uri",
-    },
-    "vector_search_parameters": {"k": 3},
-    "chunk_template": "`{chunk_text}`\n",
-    "chat_endpoint": "databricks-dbrx-instruct",
-    "chat_prompt_template": "You are a trusted assistant that helps answer questions based only on the provided information. If you do not know the answer to a question, you truthfully say you do not know.  Here is some context which might or might not help you answer: {context}.  Answer directly, do not repeat the question, do not start with something like: the answer to the question, do not add AI in front of your answer, do not say: here is the answer, do not mention the context or the question. Based on this context, answer this question: {question}",
-    "chat_prompt_template_variables": ["context", "question"],
-    "chat_endpoint_parameters": {"temperature": 0.01, "max_tokens": 500},
-    "query_rewriter_prompt_template": "Based on the chat history below, we want you to generate a query for an external data source to retrieve relevant documents so that we can better answer the question. The query should be in natural language. The external data source uses similarity search to search for relevant documents in a vector space. So the query should be similar to the relevant documents semantically. Answer with only the query. Do not add explanation.\n\nChat history: {chat_history}\n\nQuestion: {question}",
-    "query_rewriter_prompt_template_variables": ["chat_history", "question"],
-}
-
 with mlflow.start_run():
     # Log the chain code + config + parameters to the run
     logged_chain_info = mlflow.langchain.log_model(
         lc_model=chain_notebook_path,
-        model_config=baseline_config,  # The configuration to test - this can also be a YAML file path rather than a Dict e.g., `chain_config_path`
+        model_config=chain_config_path,  
         artifact_path="chain",
         input_example=input_example,
         example_no_conversion=True,  # required to allow the schema to work
         extra_pip_requirements=[  # temporary workaround needed during Private Preview
-            "databricks-rag-studio==0.2.0"
+            "databricks-rag-studio==0.2.0",
+            "flashrank"
         ],
     )
 

@@ -38,6 +38,7 @@ The software and other materials included in this repo ("Copyrighted Materials")
       - [Tutorial 2: Parameterizing chains](#tutorial-2-parameterizing-chains)
       - [Tutorial 3: Running evaluation on a logged RAG chain](#tutorial-3-running-evaluation-on-a-logged-rag-chain)
       - [Tutorial 4: Running evaluation on a RAG chain or app built outside of RAG Studio](#tutorial-4-running-evaluation-on-a-RAG-chain-or-app-built-outside-of-rag-studio)
+      - [Tutorial 5: Using External Models or Provisioned Throughput with RAG Studio](#tutorial-5-using-external-model-or-provisioned-throughput)
 
 # Product documentation
 
