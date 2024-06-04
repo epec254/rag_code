@@ -126,8 +126,9 @@ with mlflow.start_run(run_name="level_C_data"):
     model="runs:/a828658a8c9f46eeb7ef346e65228394/chain", 
     model_type="databricks-rag")
 ```
+
 To include results from custom LLM judges alongside the builtin metric results,
-specify a judge using the config string, illustrated below.
+create an judge using [`mlflow.metrics.genai.make_genai_metric_from_prompt`](https://mlflow.org/docs/latest/python_api/mlflow.metrics.html#mlflow.metrics.genai.make_genai_metric_from_prompt).
 The prompt used in a custom judge may include any of the following variables:
 - `request`
 - `response`
@@ -136,35 +137,53 @@ The prompt used in a custom judge may include any of the following variables:
 
 The metric's assessment type must be specified as one of `ANSWER` or `RETRIEVAL`.
 
+MLflow's `make_genai_metric_from_prompt` returns metrics that use integer scores from 1-5,
+where 5 reflects an input that best matches the supplied criteria.
+The score threshold for rating the metric True or False can optionally be specified.
+The threshold defaults to 3.
+
+You can also specify whether higher or lower values are better for the metric using `greater_is_better`.
+This can be useful, for example, when defining a metric that measures the harmfulness of a response.
+
+**Note**: `ANSWER` assessments that use `retrieved_context` will be evaluated once over all documents retrieved
+concatenated together. `RETRIEVAL` assessments that use `retrieved_context` will be evaluated once per document retrieved.
+
 ```
 import mlflow
 
-config_str = """
-builtin_assessments:
-  - harmfulness
-  - groundedness
-  - correctness
-  - relevance_to_query
-  - chunk_relevance
-assessment_judges:
-  - judge_name: my_judge
-    endpoint_name: endpoints:/databricks-dbrx-instruct
-    assessments:
-      - name: has_pii
-        type: RETRIEVAL
-        definition: "Your task is to determine whether the retrieved content has any PII information. This was the content: '{retrieved_context}'"
-      - name: professional
-        type: ANSWER
-        definition: "Your task is to determine if the response has a professional tone. The response is: '{response}'"
-"""
+from mlflow.metrics.genai import make_genai_metric_from_prompt
+
+# Define a custom LLM judge
+answer_prompt = "Your must assess the ease of understanding of a bot's responses. " \
+         "The bot was asked: '{request}'. The bot responded: '{response}'. "
+
+custom_answer_metric = make_genai_metric_from_prompt(
+  name="custom_answer_metric",
+  judge_prompt=prompt,
+  model="endpoints:/llm-endpoint",
+  greater_is_better=True,
+  metric_metadata={"assessment_type": "ANSWER", "score_threshold": 4},
+)
+
+retrieval_prompt = "You must determine if the context retrieved by a bot in response to a question contained
+harmful information. The bot was asked: '{request}'. The bot retrieved: '{retrieved_context}'. "
+
+custom_retrieval_metric = make_genai_metric_from_prompt(
+  name="custom_retrieval_metric",
+  judge_prompt=prompt,
+  model="endpoints:/llm-endpoint",
+  greater_is_better=False,
+  metric_metadata={"assessment_type": "RETRIEVAL", "score_threshold": 4},
+)   
 
 with mlflow.start_run(run_name="level_C_data"):
   evaluation_results = mlflow.evaluate(
     data=level_C_data_df,
-    model="runs:/a828658a8c9f46eeb7ef346e65228394/chain",
+    model="runs:/a828658a8c9f46eeb7ef346e65228394/chain", 
     model_type="databricks-rag",
-    evaluator_config={"databricks-rag": {"config_yml": config_str}}
+    extra_metrics=[custom_answer_metric, custom_retrieval_metric]
   )
+
 ```
 #### Step 3: Use the data & metrics
 
