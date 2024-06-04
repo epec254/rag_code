@@ -145,6 +145,9 @@ The threshold defaults to 3.
 You can also specify whether higher or lower values are better for the metric using `greater_is_better`.
 This can be useful, for example, when defining a metric that measures the harmfulness of a response.
 
+**Note**: `ANSWER` assessments that use `retrieved_context` will be evaluated once over all documents retrieved
+concatenated together. `RETRIEVAL` assessments that use `retrieved_context` will be evaluated once per document retrieved.
+
 ```
 import mlflow
 
