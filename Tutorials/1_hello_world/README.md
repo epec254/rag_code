@@ -81,7 +81,6 @@ with mlflow.start_run():
     artifact_path="chain", # Any user provided string, used as the path inside the MLflow model where artifacts are stored
     input_example=input_example, # Must be a valid input to your chain 
     example_no_conversion=True, # Required to enable 
-    extra_pip_requirements = ["databricks-rag-studio==0.2.0"] # Required during PrPr to tell Databricks, this is a RAG Studio compatible model
   )
 
 print(f"MLflow Run: {logged_chain_info.run_id}")
@@ -97,7 +96,7 @@ Normally, at this point in your dev loop, you would evaluate the chain.  We will
 
 #### Step 4. Deploying the chain to the Review App & a REST API
 
-RAG Studio uses Databricks Model Serving to deploy your chain.  During development, you deploy your chain to collect feedback from expert stakeholders.  During production, you deploy your chain to make it available as a REST API that can be integrated into your user-facing application.  With RAG Studio, a single  `deploy(...)` command creates a scalable, production-ready deployment that works for either of these use cases.
+RAG Studio uses Databricks Model Serving to deploy your chain.  During development, you deploy your chain to collect feedback from expert stakeholders.  During production, you deploy your chain to make it available as a REST API that can be integrated into your user-facing application.  With RAG Studio, a single  `deploy_model(...)` command creates a scalable, production-ready deployment that works for either of these use cases.
 
 **Before you deploy your model, you must register your logged model (from step 2) to the Unity Catalog:**
 
@@ -117,10 +116,10 @@ uc_model_info = mlflow.register_model(model_uri=logged_chain_info.model_uri, nam
 **Then, you can deploy your model:**
 
 ```python
-from databricks.agents import deploy
+from databricks.agents import deploy_model
 from mlflow.utils import databricks_utils as du
 
-deployment = deploy(model_fqn, uc_model_info.version)
+deployment = deploy_model(model_fqn, uc_model_info.version)
 
 # query_endpoint is the URL that can be used to make queries to the app
 deployment.query_endpoint
@@ -141,7 +140,7 @@ parse_deployment_info(deployment)
 
 ```
 
-**Calling `deploy(...)` does the following:**
+**Calling `deploy_model(...)` does the following:**
 
 1. Enables the Review App for your chain
     - Allows your expert stakeholders can chat with the chain & give feedback via a web UI

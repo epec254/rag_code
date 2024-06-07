@@ -336,9 +336,6 @@ with mlflow.start_run():
         artifact_path="chain",
         input_example=input_example,
         example_no_conversion=True,  # required to allow the schema to work
-        extra_pip_requirements=[  # temporary workaround needed during Private Preview
-            "databricks-rag-studio==0.2.0"
-        ],
     )
 
     # Evaluate the logged model
