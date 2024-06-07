@@ -191,6 +191,7 @@ level_C_data_df = pd.DataFrame(level_C_data)
 # COMMAND ----------
 
 # If you do not start a MLflow run, `evaluate(...) will start a Run on your behalf.
+mlflow.set_registry_uri('databricks-uc')
 with mlflow.start_run(run_name="level_C_data"):
   evaluation_results = mlflow.evaluate(data=level_C_data_df, model="runs:/a828658a8c9f46eeb7ef346e65228394/chain", model_type="databricks-rag")
 
@@ -266,7 +267,7 @@ print("Aggregate metrics computed:")
 display(metrics_as_dict)
 
 # Sample usage
-print(f"The average precision of the retrieval step is: {metrics_as_dict['retrieval/ground_truth/document_precision/average']}")
+print(f"The average precision of the retrieval step is: {metrics_as_dict['response/llm_judged/relevance_to_query/rating/percentage']}")
 
 
 # COMMAND ----------

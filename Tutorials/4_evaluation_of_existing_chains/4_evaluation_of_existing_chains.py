@@ -237,6 +237,7 @@ level_4_data_df = pd.DataFrame(level_4_data)
 # COMMAND ----------
 
 # If you do not start a MLflow run, `evaluate(...) will start a Run on your behalf.
+mlflow.set_registry_uri('databricks-uc')
 with mlflow.start_run(run_name="level_4_data"):
   evaluation_results = mlflow.evaluate(data=level_4_data_df, model_type="databricks-rag")
 
