@@ -28,18 +28,18 @@ model_name = 'pdf_bot'
 # UC FQN to the Inference Table
 # You can find this from the chain's Model Serving Endpoint, but by default it is set to `rag_studio-{model_name}_payload`
 ############
-inference_table_uc_fqn = f"{uc_catalog}.{uc_schema}.`rag_studio-{model_name}_payload`"
+inference_table_uc_fqn = f"{uc_catalog}.{uc_schema}.`{model_name}_payload`"
 
 ############
 # Specify UC FQN to output the `request_log` table to
 ############
-request_log_output_uc_fqn = f"{uc_catalog}.{uc_schema}.`rag_studio-{model_name}_request_log`"
+request_log_output_uc_fqn = f"{uc_catalog}.{uc_schema}.`{model_name}_request_log`"
 
 
 ############
 # Specify UC FQN to output the `assessment_log` table to
 ############
-assessment_log_output_uc_fqn = f"{uc_catalog}.{uc_schema}.`rag_studio-{model_name}_assessment_log`"
+assessment_log_output_uc_fqn = f"{uc_catalog}.{uc_schema}.`{model_name}_assessment_log`"
 
 # COMMAND ----------
 

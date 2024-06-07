@@ -97,7 +97,7 @@ Normally, at this point in your dev loop, you would evaluate the chain.  We will
 
 #### Step 4. Deploying the chain to the Review App & a REST API
 
-RAG Studio uses Databricks Model Serving to deploy your chain.  During development, you deploy your chain to collect feedback from expert stakeholders.  During production, you deploy your chain to make it available as a REST API that can be integrated into your user-facing application.  With RAG Studio, a single  `deploy_model(...)` command creates a scalable, production-ready deployment that works for either of these use cases.
+RAG Studio uses Databricks Model Serving to deploy your chain.  During development, you deploy your chain to collect feedback from expert stakeholders.  During production, you deploy your chain to make it available as a REST API that can be integrated into your user-facing application.  With RAG Studio, a single  `deploy(...)` command creates a scalable, production-ready deployment that works for either of these use cases.
 
 **Before you deploy your model, you must register your logged model (from step 2) to the Unity Catalog:**
 
@@ -117,10 +117,10 @@ uc_model_info = mlflow.register_model(model_uri=logged_chain_info.model_uri, nam
 **Then, you can deploy your model:**
 
 ```python
-from databricks.rag_studio import deploy_model
+from databricks.agents import deploy
 from mlflow.utils import databricks_utils as du
 
-deployment = deploy_model(model_fqn, uc_model_info.version)
+deployment = deploy(model_fqn, uc_model_info.version)
 
 # query_endpoint is the URL that can be used to make queries to the app
 deployment.query_endpoint
@@ -141,7 +141,7 @@ parse_deployment_info(deployment)
 
 ```
 
-**Calling `deploy_model(...)` does the following:**
+**Calling `deploy(...)` does the following:**
 
 1. Enables the Review App for your chain
     - Allows your expert stakeholders can chat with the chain & give feedback via a web UI
@@ -150,8 +150,8 @@ parse_deployment_info(deployment)
     - `feedback` to pass feedback from your front end
 3. Complete logging of every request to the Review App or REST API e.g., input/output and intermediate trace via Inference Tables
     - 3 Delta Tables are created for each deployment
-      1. Raw JSON payloads `{catalog_name}.{schema_name}.rag_studio_{model_name}_payload`
-      2. Formatted request/response & MLflow Traces `{catalog_name}.{schema_name}.rag_studio_{model_name}_payload_request_logs`
-      3. Formatted feedback, as provided in the Review App or via Feedback API, for each request `{catalog_name}.{schema_name}.rag_studio_{model_name}_payload_assessment_logs`
+      1. Raw JSON payloads `{catalog_name}.{schema_name}.{model_name}_payload`
+      2. Formatted request/response & MLflow Traces `{catalog_name}.{schema_name}.{model_name}_payload_request_logs`
+      3. Formatted feedback, as provided in the Review App or via Feedback API, for each request `{catalog_name}.{schema_name}.{model_name}_payload_assessment_logs`
 
 **Note:** It can take up to 15 minutes to deploy.  Raw JSON payloads take 10 - 30 minutes to arrive, and the formatted logs are processed from the raw payloads every ~hour.

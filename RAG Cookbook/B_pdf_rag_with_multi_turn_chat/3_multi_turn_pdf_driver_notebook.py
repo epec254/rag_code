@@ -21,7 +21,7 @@
 # COMMAND ----------
 
 # DBTITLE 1,Databricks RAG Studio Installer
-# MAGIC %pip install databricks-rag-studio 'mlflow>=2.13'
+# MAGIC %pip install databricks-agents 'mlflow>=2.13'
 
 # COMMAND ----------
 
@@ -40,7 +40,7 @@ dbutils.library.restartPython()
 
 import os
 import mlflow
-from databricks import rag_studio
+from databricks import agents
 import pandas as pd
 # Use Unity Catalog as the model registry
 mlflow.set_registry_uri('databricks-uc')
@@ -392,8 +392,7 @@ uc_registered_model_info = mlflow.register_model(model_uri=logged_chain_info.mod
 
 # COMMAND ----------
 
-deployment_info = rag_studio.deploy_model(uc_model_fqn, uc_registered_model_info.version)
-print(parse_deployment_info(deployment_info))
+deployment_info = agents.deploy(uc_model_fqn, uc_registered_model_info.version)
 
 # Note: It can take up to 15 minutes to deploy - we are working to reduce this time to seconds.
 
@@ -408,7 +407,7 @@ print(parse_deployment_info(deployment_info))
 # COMMAND ----------
 
 # DBTITLE 1,View deployments
-deployments = rag_studio.list_deployments()
+deployments = agents.list_deployments()
 for deployment in deployments:
   if deployment.model_name == uc_model_fqn and deployment.model_version==uc_registered_model_info.version:
     print(parse_deployment_info(deployment))

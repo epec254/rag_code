@@ -50,7 +50,7 @@ Our documentation provides a comprehensive overview of the above functionality:
 
 - Only tested on Databricks Runtime 15.0 and 14.3 Single User clusters.  They have not been tested on MLR or Shared Clusters.
 - Only supports chains using the Langchain framework. Generic Python functionality is coming soon.
-- Chains that need custom credentials for external services e.g., directly calling 3rd party APIs require these credentials to be manually configured in the model serving UI after calling `deploy_model(...)`
+- Chains that need custom credentials for external services e.g., directly calling 3rd party APIs require these credentials to be manually configured in the model serving UI after calling `deploy(...)`
 - Support for custom Python library dependencies and versions e.g., `pip_requirements` in `mlflow.langchain.log_model(...)` has not been tested extensively.
 - Serialization-based MLFlow logging has not been tested with RAG Studio
 - Code-based MLflow logging captures all loaded Python packages in the Driver Notebook as the `pip_requirements` for the MLflow model - if you need to add or remove requirements, pass a custom `pip_requirements` array that includes `"databricks-rag-studio==0.2.0"`.

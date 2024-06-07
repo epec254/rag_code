@@ -1,6 +1,6 @@
 # Databricks notebook source
 # DBTITLE 1,Install RAG Studio packages
-# MAGIC %pip install databricks-rag-studio 'mlflow>=2.13'  langchain==0.2.0 langchain_core==0.2.0 langchain_community==0.2.0
+# MAGIC %pip install databricks-agents 'mlflow>=2.13'  langchain==0.2.0 langchain_core==0.2.0 langchain_community==0.2.0
 
 # COMMAND ----------
 
