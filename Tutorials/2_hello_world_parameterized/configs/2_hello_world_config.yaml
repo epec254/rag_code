@@ -1,9 +1,0 @@
-llm_parameters:
-  max_tokens: 500
-  temperature: 0.01
-model_serving_endpoint: databricks-dbrx-instruct
-prompt_template: 'You are a hello world bot.  Respond with a reply to the user''s
-  question that indicates your prompt template came from a YAML file.  Your response
-  must use the word "YAML" somewhere.  User''s question: {question}'
-prompt_template_input_vars:
-- question
